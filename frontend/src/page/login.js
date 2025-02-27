@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Checkbox, Form, Grid, Input, theme, Typography } from "antd";
+import { Button, Checkbox, Form, Grid, Input, theme, Typography, Card } from "antd";
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
 
 const { useToken } = theme;
@@ -16,9 +16,33 @@ const LoginPage = () => {
 
   const styles = {
     container: {
-      margin: "0 auto",
-      padding: screens.md ? `${token.paddingXL}px` : `${token.sizeXXL}px ${token.padding}px`,
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "100vh",
+      backgroundImage: "url('https://wallpapersmug.com/download/1920x1080/a3d4db/beautiful-evening-landscape-minimal.jpeg')", // ใส่ URL รูปพื้นหลัง
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+      padding: screens.md ? "0" : "20px",
+    },
+    overlay: {
+      width: "100%",
+      height: "100%",
+      position: "absolute",
+      top: 0,
+      left: 0,
+      backgroundColor: "rgba(0, 0, 0, 0.3)", // เพิ่ม Layer มืดให้พื้นหลัง
+      backdropFilter: "blur(6px)", // ทำให้พื้นหลังเบลอ
+    },
+    card: {
+      position: "relative",
       width: "380px",
+      zIndex: 10,
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
+      borderRadius: token.borderRadiusLG,
+      padding: "24px",
+      backgroundColor: "rgba(255, 255, 255, 0.9)", // ทำให้ Card โปร่งแสง
     },
     footer: {
       marginTop: token.marginLG,
@@ -28,29 +52,17 @@ const LoginPage = () => {
     forgotPassword: {
       float: "right",
     },
-    header: {
-      marginBottom: token.marginXL,
-    },
-    section: {
-      alignItems: "center",
-      backgroundColor: token.colorBgContainer,
-      display: "flex",
-      height: screens.sm ? "100vh" : "auto",
-      padding: screens.md ? `${token.sizeXXL}px 0px` : "0px",
-    },
     text: {
       color: token.colorTextSecondary,
     },
-    title: {
-      fontSize: screens.md ? token.fontSizeHeading2 : token.fontSizeHeading3,
-    },
   };
 
+
   return (
-    <section style={styles.section}>
-      <div style={styles.container}>
-        <div style={styles.header}>
-          <Title style={styles.title}>Sign in</Title>
+    <div style={styles.container}>
+      <Card style={styles.card}>
+        <div style={{ textAlign: "center", marginBottom: "24px" }}>
+          <Title level={3}>Sign in</Title>
           <Text style={styles.text}>Welcome back! Please enter your details to sign in.</Text>
         </div>
         <Form name="normal_login" initialValues={{ remember: true }} onFinish={onFinish} layout="vertical" requiredMark="optional">
@@ -73,8 +85,8 @@ const LoginPage = () => {
             </div>
           </Form.Item>
         </Form>
-      </div>
-    </section>
+      </Card>
+    </div>
   );
 };
 
