@@ -1,17 +1,27 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { ConfigProvider } from 'antd';
-import th_TH from 'antd/locale/th_TH';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import 'antd/dist/reset.css'; // เปลี่ยนเป็นเส้นทางสำหรับ Ant Design 5.x
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { ConfigProvider } from "antd";
+import th_TH from "antd/locale/th_TH";
+import "./index.css";
+import "antd/dist/reset.css"; // Ant Design 5.x
+import App from "./App";
+import LoginPage from "./page/login"; // นำเข้า LoginPage
+import UserSettingPage from "./page/UserSettingPage"; // นำเข้า UserSettingPage
+import reportWebVitals from "./reportWebVitals";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
+
 root.render(
   <React.StrictMode>
     <ConfigProvider locale={th_TH}>
-      <App />
+      <Router>
+        <Routes>
+          <Route path="/" element={<App />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/usersetting" element={<UserSettingPage />} />
+        </Routes>
+      </Router>
     </ConfigProvider>
   </React.StrictMode>
 );

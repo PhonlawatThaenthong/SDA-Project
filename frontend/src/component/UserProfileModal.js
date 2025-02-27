@@ -7,10 +7,13 @@ import {
   CloudOutlined,
   SettingOutlined
 } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
 
 const UserProfileModal = ({ visible, onCancel }) => {
+  const navigate = useNavigate();
+  
   // ข้อมูลผู้ใช้ตัวอย่าง (ในโปรเจคจริงจะรับมาจาก API)
   const userData = {
     name: 'สมชาย ใจดี',
@@ -23,6 +26,11 @@ const UserProfileModal = ({ visible, onCancel }) => {
     plan: 'Professional',
   };
   
+  const handleSettingsClick = () => {
+    onCancel(); // ปิด Modal
+    navigate('/usersetting'); // นำทางไปยังหน้าตั้งค่าบัญชี
+  };
+  
   return (
     <Modal
       title="ข้อมูลผู้ใช้"
@@ -32,7 +40,12 @@ const UserProfileModal = ({ visible, onCancel }) => {
         <Button key="close" onClick={onCancel}>
           ปิด
         </Button>,
-        <Button key="settings" icon={<SettingOutlined />} type="default">
+        <Button 
+          key="settings" 
+          icon={<SettingOutlined />} 
+          type="default"
+          onClick={handleSettingsClick}
+        >
           ตั้งค่าบัญชี
         </Button>,
       ]}

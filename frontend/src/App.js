@@ -11,11 +11,11 @@ import {
   PlusOutlined,
   SearchOutlined
 } from '@ant-design/icons';
-import FileList from './FileList';
-import FavoritesList from './FavoritesList';
-import TrashList from './TrashList';
-import UploadModal from './UploadModal';
-import UserProfileModal from './UserProfileModal';
+import FileList from './component/FileList';
+import FavoritesList from './component/FavoritesList';
+import TrashList from './component/TrashList';
+import UploadModal from './component/UploadModal';
+import UserProfileModal from './component/UserProfileModal';
 
 const { Header, Sider, Content } = Layout;
 const { Text } = Typography;
@@ -68,11 +68,6 @@ const App = () => {
       <Space direction="vertical" style={{ width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Text strong>พื้นที่เก็บข้อมูล</Text>
-          <Tooltip title="คลิกเพื่อซื้อพื้นที่เพิ่มเติม">
-            <Button type="link" size="small" icon={<PlusOutlined />} style={{ padding: 0 }}>
-              เพิ่มพื้นที่
-            </Button>
-          </Tooltip>
         </div>
         
         <Progress percent={storageUsed} size="small" strokeColor={{
