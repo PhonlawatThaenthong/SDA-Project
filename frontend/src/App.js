@@ -11,11 +11,11 @@ import {
   PlusOutlined,
   SearchOutlined
 } from '@ant-design/icons';
-import FileList from './FileList';
-import FavoritesList from './FavoritesList';
-import TrashList from './TrashList';
-import UploadModal from './UploadModal';
-import UserProfileModal from './UserProfileModal';
+import FileList from './component/FileList';
+import FavoritesList from './component/FavoritesList';
+import TrashList from './component/TrashList';
+import UploadModal from './component/UploadModal';
+import UserProfileModal from './component/UserProfileModal';
 
 const { Header, Sider, Content } = Layout;
 const { Text } = Typography;
