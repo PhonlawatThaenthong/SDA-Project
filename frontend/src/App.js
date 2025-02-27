@@ -12,6 +12,8 @@ import {
   SearchOutlined
 } from '@ant-design/icons';
 import FileList from './FileList';
+import FavoritesList from './FavoritesList';
+import TrashList from './TrashList';
 import UploadModal from './UploadModal';
 import UserProfileModal from './UserProfileModal';
 
@@ -24,6 +26,7 @@ const App = () => {
   const [isUploadModalVisible, setIsUploadModalVisible] = useState(false);
   const [isUserProfileVisible, setIsUserProfileVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
+  const [currentPage, setCurrentPage] = useState('files'); // เพิ่มตัวแปร state สำหรับติดตามหน้าปัจจุบัน
   
   // อัตราการใช้พื้นที่เก็บข้อมูล (ตัวอย่าง)
   const storageUsed = 45; // เปอร์เซ็นต์ที่ใช้ไป
@@ -89,6 +92,27 @@ const App = () => {
     </div>
   );
 
+  // แสดงคอมโพเนนต์ตามหน้าที่เลือก
+  const renderContent = () => {
+    switch(currentPage) {
+      case 'files':
+        return <FileList />;
+      case 'favorites':
+        return <FavoritesList />;
+      case 'shared':
+        return <div>พื้นที่ใช้งานร่วม</div>; // ยังไม่มีคอมโพเนนต์ เลยใส่ placeholder ไว้ก่อน
+      case 'trash':
+        return <TrashList />;
+      default:
+        return <FileList />;
+    }
+  };
+
+  // ฟังก์ชันจัดการการเปลี่ยนหน้า
+  const handleMenuSelect = (e) => {
+    setCurrentPage(e.key);
+  };
+
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider 
@@ -111,18 +135,23 @@ const App = () => {
           {!collapsed && <span style={{ color: 'white', marginLeft: '8px', fontWeight: 'bold' }}>TH Cloud</span>}
         </div>
         
-        <Menu theme="light" defaultSelectedKeys={['1']} mode="inline">
-          <Menu.Item key="1" icon={<HomeOutlined />}>
+        <Menu 
+          theme="light" 
+          selectedKeys={[currentPage]} 
+          mode="inline"
+          onClick={handleMenuSelect}
+        >
+          <Menu.Item key="files" icon={<HomeOutlined />}>
             ไฟล์ของฉัน
           </Menu.Item>
-          <Menu.Item key="2" icon={<StarOutlined />}>
+          <Menu.Item key="favorites" icon={<StarOutlined />}>
             รายการโปรด
           </Menu.Item>
           <Menu.Divider />
-          <Menu.Item key="3" icon={<CloudOutlined />}>
+          <Menu.Item key="shared" icon={<CloudOutlined />}>
             พื้นที่ใช้งานร่วม
           </Menu.Item>
-          <Menu.Item key="4" icon={<DeleteOutlined />}>
+          <Menu.Item key="trash" icon={<DeleteOutlined />}>
             ถังขยะ
           </Menu.Item>
         </Menu>
@@ -185,7 +214,7 @@ const App = () => {
             borderRadius: '8px',
             boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)'
           }}>
-            <FileList />
+            {renderContent()} {/* แสดงคอมโพเนนต์ตามหน้าที่เลือก */}
           </div>
         </Content>
       </Layout>
