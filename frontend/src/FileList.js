@@ -213,6 +213,12 @@ const FileList = () => {
 
   return (
     <>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <Typography.Title level={4} style={{ margin: 0 }}>
+          ไฟล์ของฉัน
+        </Typography.Title>
+      </div>
+
       {/* เครื่องมือกรองและเรียงลำดับ */}
       <div className="file-tools" style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Space>
