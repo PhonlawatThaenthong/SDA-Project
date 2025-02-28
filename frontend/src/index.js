@@ -8,7 +8,9 @@ import "antd/dist/reset.css"; // Ant Design 5.x
 import App from "./App";
 import LoginPage from "./page/login"; // นำเข้า LoginPage
 import UserSettingPage from "./page/UserSettingPage"; // นำเข้า UserSettingPage
+import Home from "./page/Home"; // นำเข้า Home
 import reportWebVitals from "./reportWebVitals";
+
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -17,9 +19,10 @@ root.render(
     <ConfigProvider locale={th_TH}>
       <Router>
         <Routes>
-          <Route path="/" element={<App />} />
+          <Route path="/" element={<Home />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/usersetting" element={<UserSettingPage />} />
+          <Route path="/Home" element={<Home />} />
         </Routes>
       </Router>
     </ConfigProvider>
