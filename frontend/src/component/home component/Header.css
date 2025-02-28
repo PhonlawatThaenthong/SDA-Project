@@ -1,0 +1,34 @@
+/* src/components/Header.css */
+
+.ant-layout-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 50px;
+    background: #fff;
+  }
+  
+  .ant-row {
+    width: 100%;
+  }
+  
+  .ant-col {
+    min-width: 150px; /* กำหนดขั้นต่ำของคอลัมน์เพื่อป้องกันไม่ให้มันยุบ */
+  }
+  
+  .ant-btn {
+    margin-left: 0px;
+    min-width: 120px; /* กำหนดขนาดขั้นต่ำของปุ่ม */
+  }
+  
+  @media (max-width: 768px) {
+    .ant-layout-header {
+      padding: 0 20px;
+    }
+  
+    .ant-menu-horizontal {
+      display: flex;
+      justify-content: space-around;
+    }
+  }
+  

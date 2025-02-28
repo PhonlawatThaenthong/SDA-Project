@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Checkbox, Form, Grid, Input, theme, Typography, Card, message } from "antd";
-import { LockOutlined, MailOutlined } from "@ant-design/icons";
+import { LockOutlined, MailOutlined, UserOutlined} from "@ant-design/icons";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -18,9 +18,10 @@ const LoginPage = () => {
     try {
       if (isSignUp) {
         // Signup API call
-        const res = await axios.post("http://localhost:5000/signup", values);
+        const { email, username, password } = values;
+        const res = await axios.post("http://localhost:5000/signup", { email, username, password });
         message.success(res.data.message);
-        setIsSignUp(false); // Switch to Sign In after successful signup
+        setIsSignUp(false);
       } else {
         // Login API call
         const res = await axios.post("http://localhost:5000/login", values);
@@ -94,10 +95,13 @@ const LoginPage = () => {
         {/* Sign Up Form */}
         {isSignUp && (
           <Form name="signup_form" onFinish={onFinish} layout="vertical">
-            <Form.Item name="email" rules={[{ type: "email", required: true, message: "Please input your Email!" }]}>
+            <Form.Item name="username" rules={[{ required: true, message: "Please input your Username!" }]}> 
+              <Input prefix={<UserOutlined />} placeholder="Username" />
+            </Form.Item>
+            <Form.Item name="email" rules={[{ type: "email", required: true, message: "Please input your Email!" }]}> 
               <Input prefix={<MailOutlined />} placeholder="Email" />
             </Form.Item>
-            <Form.Item name="password" rules={[{ required: true, message: "Please input your Password!" }]}>
+            <Form.Item name="password" rules={[{ required: true, message: "Please input your Password!" }]}> 
               <Input.Password prefix={<LockOutlined />} placeholder="Password" />
             </Form.Item>
             <Form.Item
