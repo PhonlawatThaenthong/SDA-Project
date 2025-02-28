@@ -7,12 +7,13 @@ const jwt = require("jsonwebtoken");
 const UserModel = require('./user');
 const { ImageDetails } = require("./imagedetail");
 const path = require("path");
+const cookieParser = require('cookie-parser')
 
 const app = express();
 app.use(express.json()); // Enable JSON parsing
 app.use(cors()); // Enable CORS
 app.use(express.static("uploads"));
-
+app.use(cookieParser())
 
 // Connect to MongoDB
 mongoose.connect("mongodb+srv://admin:1234@cluster0.5ojwu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", {
