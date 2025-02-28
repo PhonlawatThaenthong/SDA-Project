@@ -71,22 +71,15 @@ app.post('/signout', (req, res) => {
 })
 
 // ✅ SIGNUP ROUTE (Fix)
-app.post("/signup", async (req, res) => {
-  const { email, password } = req.body;
-
-  try {
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    const newUser = new User({ email, password: hashedPassword });
-    await newUser.save();
-
-    res.status(201).json({ message: "User registered successfully" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
-  }
-});
+app.post('/signup', (req, res) => {
+  const {username, email, password} = req.body;
+  bcrypt.hash(password, 10)
+  .then(hash => {
+      UserModel.create({username, email, password: hash})
+      .then(users => res.json(users))
+      .catch(err => res.json(err))
+  })
+})
 
 // ✅ Start the Server
 const PORT = 5000;
