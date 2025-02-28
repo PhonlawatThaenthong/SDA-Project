@@ -7,13 +7,12 @@ const jwt = require("jsonwebtoken");
 const UserModel = require('./user');
 const { ImageDetails } = require("./imagedetail");
 const path = require("path");
-const cookieParser = require('cookie-parser')
 
 const app = express();
 app.use(express.json()); // Enable JSON parsing
 app.use(cors()); // Enable CORS
 app.use(express.static("uploads"));
-app.use(cookieParser())
+
 
 // Connect to MongoDB
 mongoose.connect("mongodb+srv://admin:1234@cluster0.5ojwu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", {
@@ -65,7 +64,7 @@ const UserSchema = new mongoose.Schema({
 });
 const User = mongoose.model("User", UserSchema);
 
-// ✅ LOGIN ROUTE (Fix)
+// :white_check_mark: LOGIN ROUTE (Fix)
 app.post('/login', (req ,res) => {
   const { _id, email, password } = req.body
 
@@ -81,7 +80,14 @@ app.post('/login', (req ,res) => {
                       sameSite: 'none', // Change to 'none' in production if using cross-site cookies
                       maxAge: 3600000 // 1 hour in milliseconds
                     });
-                  return res.json("User signed in")
+                  return res.json({
+                    message: "User signed in successfully",
+                    token: token,
+                    user: {
+                      _id: user._id,
+                      email: user.email,
+                      username: user.username
+                    }})
               } else {
                   return res.json("Email or password is incorrect")
                   
@@ -114,7 +120,7 @@ app.post('/signout', (req, res) => {
   return res.json("User signed out");
 })
 
-// ✅ SIGNUP ROUTE (Fix)
+// :white_check_mark: SIGNUP ROUTE (Fix)
 app.post('/signup', (req, res) => {
   const {username, email, password} = req.body;
   bcrypt.hash(password, 10)
@@ -125,7 +131,7 @@ app.post('/signup', (req, res) => {
   })
 })
 
-// ✅ Start the Server
+// :white_check_mark: Start the Server
 const PORT = 5000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

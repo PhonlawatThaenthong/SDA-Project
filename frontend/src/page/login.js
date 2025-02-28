@@ -20,18 +20,43 @@ const LoginPage = () => {
         // Signup API call
         const { email, username, password } = values;
         const res = await axios.post("http://localhost:5000/signup", { email, username, password });
-        message.success(res.data.message);
+        message.success("Sign up successful!");
         setIsSignUp(false);
       } else {
         // Login API call
         const res = await axios.post("http://localhost:5000/login", values);
-        message.success(res.data.message);
-        navigate("/");
+        
+        // เก็บ token และข้อมูลผู้ใช้ลงใน localStorage
+        if (res.data && res.data.token) {
+          localStorage.setItem('token', res.data.token);
+          localStorage.setItem('user', JSON.stringify(res.data.user));
+          message.success("Login successful!");
+          navigate("/");
+        } else if (res.data === "User signed in") {
+          // กรณีเซิร์ฟเวอร์ยังไม่ได้แก้ไขให้ส่ง token กลับมา
+          message.success("Login successful!");
+          navigate("/");
+        } else {
+          message.error("Login failed: No token received");
+        }
       }
     } catch (error) {
       message.error(error.response?.data?.message || "Something went wrong");
     }
   };
+
+  // สร้างฟังก์ชันสำหรับตรวจสอบว่ามี token อยู่ใน localStorage หรือไม่
+  const checkAuth = () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate('/');
+    }
+  };
+
+  // เรียกใช้ฟังก์ชัน checkAuth เมื่อคอมโพเนนต์ถูกโหลด
+  React.useEffect(() => {
+    checkAuth();
+  }, []);
 
   const styles = {
     container: {
