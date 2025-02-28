@@ -3,13 +3,14 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
+const UserModel = require('./user')
 
 const app = express();
 app.use(express.json()); // Enable JSON parsing
 app.use(cors()); // Enable CORS
 
 // Connect to MongoDB
-mongoose.connect("mongodb://localhost:27017/mydatabase", {
+mongoose.connect("mongodb+srv://admin:1234@cluster0.5ojwu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -21,22 +22,53 @@ const UserSchema = new mongoose.Schema({
 const User = mongoose.model("User", UserSchema);
 
 // ✅ LOGIN ROUTE (Fix)
-app.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+app.post('/login', (req ,res) => {
+  const { _id, email, password } = req.body
 
-  try {
-    let user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: "User not found" });
+  UserModel.findOne({ email : email })
+  .then(user => {
+      if (user) {
+          bcrypt.compare(password, user.password, (err, response) => {
+              if(response) {
+                  const token = jwt.sign({ _id: user._id, email : user.email, username : user.username }, 'secret', { expiresIn: '1hr' }) 
+                  res.cookie('token', token, {
+                      httpOnly: true,
+                      secure: true, // Set to true in production
+                      sameSite: 'none', // Change to 'none' in production if using cross-site cookies
+                      maxAge: 3600000 // 1 hour in milliseconds
+                    });
+                  return res.json("User signed in")
+              } else {
+                  return res.json("Email or password is incorrect")
+                  
+              }
+          })
+      } else {
+          return res.json("User not found")
+      }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
+  })
+})
 
-    res.status(200).json({ message: "Login successful" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
+app.get('/user', (req, res) => {
+  const token = req.cookies['token']
+  if(token) {
+      jwt.verify(token, 'secret', (err, user) => {  
+          if(err) {
+              return res.json("User not authenticated")
+          }
+          return res.json(user)
+      })
+  } 
+  else {
+      return res.json("User not authenticated")
   }
-});
+})
+
+app.post('/signout', (req, res) => {
+  res.clearCookie('token');
+  return res.json("User signed out");
+})
 
 // ✅ SIGNUP ROUTE (Fix)
 app.post("/signup", async (req, res) => {
