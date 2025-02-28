@@ -5,7 +5,7 @@
   position: relative;
   height: 100vh; /* ใช้ความสูงเต็มหน้าจอ */
   background: linear-gradient(-45deg, #6a11cb, #2575fc, #6a11cb, #2575fc);
-  background-size: 400% 400%;
+  background-size: 200% 200%;
   animation: gradientBG 15s ease infinite;
   display: flex;
   justify-content: center;

@@ -12,7 +12,6 @@ const Home = () => {
     return (
       <Layout>
         <CustomHeader />
-        <Content style={{ padding: '50px 0' }}>
           {/* Hero Section */}
           <div className="hero-section">
             <div className="hero-content">
@@ -44,7 +43,6 @@ const Home = () => {
               </Col>
             </Row>
           </div>
-        </Content>
         <CustomFooter />
       </Layout>
     );
