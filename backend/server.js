@@ -1,19 +1,62 @@
 const express = require("express");
+const multer = require("multer");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
-const UserModel = require('./user')
+const UserModel = require('./user');
+const { ImageDetails } = require("./imagedetail");
+const path = require("path");
 
 const app = express();
 app.use(express.json()); // Enable JSON parsing
 app.use(cors()); // Enable CORS
+app.use(express.static("uploads"));
+
 
 // Connect to MongoDB
 mongoose.connect("mongodb+srv://admin:1234@cluster0.5ojwu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './uploads')
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "-" + file.originalname )
+  }
+})
+
+const upload = multer({ storage })
+
+app.post("/single",upload.single("image") ,async(req,res)=>{
+try {
+  const {path , filename } = req.file
+  const image = await ImageDetails({path, filename})
+  await image.save()
+  res.send({"msg":"Image Uploaded"})
+
+} catch (error) {
+  res.send({"error":"Unable to Uploaded Image"})
+}
+})
+
+app.get("/image/:id", async(req,res)=>{
+  const {id} = req.params
+  try {
+    const image = await ImageDetails.findById(id)
+    if (!image) res.send({"msg":"Image Not Found"})
+    
+    const imagePath = path.join(__dirname,"uploads",image.filename)
+    res.sendFile(imagePath)
+
+  } catch (error) {
+    res.send({"error":"Unable to get Image"})
+
+  }
+})
 
 const UserSchema = new mongoose.Schema({
   email: String,

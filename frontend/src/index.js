@@ -10,7 +10,7 @@ import LoginPage from "./page/login"; // นำเข้า LoginPage
 import UserSettingPage from "./page/UserSettingPage"; // นำเข้า UserSettingPage
 import Home from "./page/Home"; // นำเข้า Home
 import reportWebVitals from "./reportWebVitals";
-
+import Upload from "./page/Upload";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -23,6 +23,7 @@ root.render(
           <Route path="/login" element={<LoginPage />} />
           <Route path="/usersetting" element={<UserSettingPage />} />
           <Route path="/Home" element={<Home />} />
+          <Route path="/Upload" element={<Upload />} />
         </Routes>
       </Router>
     </ConfigProvider>

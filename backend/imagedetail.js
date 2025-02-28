@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 
 const ImageDetailsScehma = new mongoose.Schema(
   {
-   image:String
-  },
-  {
-    collection: "ImageDetails",
+   path : {type:String,required:true},
+   filename : {type:String,required:true},
   }
 );
 
-mongoose.model("ImageDetails", ImageDetailsScehma);
+const ImageDetails = mongoose.model("ImageDetails", ImageDetailsScehma);
+
+module.exports = {ImageDetails}
