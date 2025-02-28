@@ -77,7 +77,7 @@ app.post('/login', (req ,res) => {
                   const token = jwt.sign({ _id: user._id, email : user.email, username : user.username }, 'secret', { expiresIn: '1hr' }) 
                   res.cookie('token', token, {
                       httpOnly: true,
-                      secure: true, // Set to true in production
+                      secure: false, // Set to true in production
                       sameSite: 'none', // Change to 'none' in production if using cross-site cookies
                       maxAge: 3600000 // 1 hour in milliseconds
                     });
