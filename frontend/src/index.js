@@ -34,12 +34,12 @@ root.render(
             } />
              <Route path="/main" element={
               <ProtectedRoute>
-                <MainPage />
+                <App />
               </ProtectedRoute>
             } />
             <Route path="/home" element={
               <ProtectedRoute>
-                <App />
+                <MainPage />
               </ProtectedRoute>
             } />
             <Route path="/Upload" element={

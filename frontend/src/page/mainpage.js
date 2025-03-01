@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect  } from 'react';
 import { Layout, Menu, Button, Avatar, Progress, Dropdown, Space, Typography, Tooltip, Input } from 'antd';
 import { 
   UploadOutlined, 
@@ -19,6 +19,9 @@ import UserProfileModal from '../component/UserProfileModal';
 const { Header, Sider, Content } = Layout;
 const { Text } = Typography;
 const { Search } = Input;
+
+
+
 
 const MainPage = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -46,16 +49,36 @@ const MainPage = () => {
     setIsUserProfileVisible(false);
   };
   
+  const [username, setUsername] = useState(''); // สร้างสถานะสำหรับ username
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user && user.username) {
+      setUsername(user.username);
+    }
+  }, []);
+
+
+
+  const handleLogout = () => {
+    // ล้างข้อมูลทั้งหมดจาก localStorage
+    localStorage.clear();
+
+    // รีเฟรชหน้า
+    window.location.reload();
+  };
+
+  
+  //      <Menu.Item key="profile" onClick={showUserProfile}>
+  //       ข้อมูลของฉัน
+  //      </Menu.Item>
   const userMenu = (
     <Menu>
-      <Menu.Item key="profile" onClick={showUserProfile}>
-        ข้อมูลของฉัน
-      </Menu.Item>
       <Menu.Item key="settings">
         ตั้งค่า
       </Menu.Item>
       <Menu.Divider />
-      <Menu.Item key="logout">
+      <Menu.Item key="logout" onClick={handleLogout}>
         ออกจากระบบ
       </Menu.Item>
     </Menu>
@@ -186,17 +209,17 @@ const MainPage = () => {
             </Button>
             
             <Dropdown overlay={userMenu} trigger={['click']}>
-              <Button type="text" style={{ height: '40px' }}>
-                <Space>
-                  <Avatar 
-                    icon={<UserOutlined />} 
-                    style={{ backgroundColor: '#1890ff' }}
-                  />
-                  {!collapsed && <span>สมชาย ใจดี</span>}
-                  <DownOutlined />
-                </Space>
-              </Button>
-            </Dropdown>
+        <Button type="text" style={{ height: '40px' }}>
+          <Space>
+            <Avatar 
+              icon={<UserOutlined />} 
+              style={{ backgroundColor: '#1890ff' }}
+            />
+            {!collapsed && <span>{username || 'ผู้ใช้'}</span>} {/* ใช้ username หรือ 'ผู้ใช้' ถ้าไม่มี */}
+            <DownOutlined />
+          </Space>
+        </Button>
+      </Dropdown>
           </Space>
         </Header>
         
