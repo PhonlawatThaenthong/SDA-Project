@@ -9,9 +9,10 @@ import App from "./App";
 import LoginPage from "./page/login";
 import UserSettingPage from "./page/UserSettingPage";
 import Home from "./page/Home";
+import ProtectedRoute from "./component/ProtectedRoute"; // Import the new component
 import reportWebVitals from "./reportWebVitals";
 import Upload from "./page/Upload";
-import { AuthProvider } from "./context/AuthContext"; // Import AuthProvider
+import { AuthProvider } from "./context/AuthContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -23,9 +24,21 @@ root.render(
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/usersetting" element={<UserSettingPage />} />
-            <Route path="/Home" element={<App />} />
-            <Route path="/Upload" element={<Upload />} />
+            <Route path="/usersetting" element={
+              <ProtectedRoute>
+                <UserSettingPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/home" element={
+              <ProtectedRoute>
+                <App />
+              </ProtectedRoute>
+            } />
+            <Route path="/Upload" element={
+              <ProtectedRoute>
+                <Upload />
+              </ProtectedRoute>
+            } />
           </Routes>
         </Router>
       </AuthProvider>

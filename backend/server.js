@@ -104,7 +104,7 @@ app.post('/login', (req, res) => {
 // Updated USER ROUTE (Using Authorization header)
 app.get('/user', (req, res) => {
   const authHeader = req.headers['authorization']
-  const token = authHeader && authHeader.split(' ')[1] // Bearer TOKEN format
+  const token = authHeader && authHeader.split(' ')[1] // อันนี้แค่ เอาคำว่า bareer ใน response ออกเฉยๆ มันจะได้เก็บ token เลย
   
   if (token) {
     jwt.verify(token, 'secret', (err, user) => {  

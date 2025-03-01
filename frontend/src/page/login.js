@@ -19,7 +19,7 @@ const LoginPage = () => {
   // Check if user is already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/');
+      navigate('/home'); // Changed from '/' to '/home'
     }
   }, [isAuthenticated, navigate]);
 
@@ -42,7 +42,7 @@ const LoginPage = () => {
         
         if (result.success) {
           message.success("Login successful!");
-          navigate("/");
+          navigate("/home"); // Changed from '/' to '/home'
         } else {
           message.error(result.message);
         }
