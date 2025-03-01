@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import axios from 'axios';
 
 const App = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Basic fetch method
   const fetchData = async () => {
     setLoading(true);
     setError(null);
@@ -22,10 +24,38 @@ const App = () => {
     }
   };
 
+  // Authenticated fetch method (migrated from Home.js)
+  const fetchUserData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error("No auth token found");
+      }
+
+      const response = await axios.get('http://localhost:5000/user', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (response.data && response.data.status === "success") {
+        setData(response.data.user);
+      } else {
+        throw new Error("Failed to fetch user data");
+      }
+    } catch (error) {
+      setError(error.message || "Error fetching user data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '50px' }}>
       <button 
-        onClick={fetchData} 
+        onClick={fetchUserData} 
         style={{ fontSize: '24px', padding: '15px 30px', cursor: 'pointer', borderRadius: '10px', backgroundColor: '#007bff', color: 'white', border: 'none' }}
       >
         ดึงข้อมูลผู้ใช้

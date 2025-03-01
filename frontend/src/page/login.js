@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Button, Checkbox, Form, Grid, Input, theme, Typography, Card, message } from "antd";
 import { LockOutlined, MailOutlined, UserOutlined} from "@ant-design/icons";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext"; // Update path if needed
 
 const { useToken } = theme;
 const { useBreakpoint } = Grid;
@@ -12,51 +13,44 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { token } = useToken();
   const screens = useBreakpoint();
-  const [isSignUp, setIsSignUp] = useState(false); // Toggle Sign In / Sign Up
+  const [isSignUp, setIsSignUp] = useState(false);
+  const { login, isAuthenticated } = useContext(AuthContext);
+
+  // Check if user is already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
 
   const onFinish = async (values) => {
     try {
       if (isSignUp) {
-        // Signup API call
+        // Sign Up
         const { email, username, password } = values;
         const res = await axios.post("http://localhost:5000/signup", { email, username, password });
-        message.success("Sign up successful!");
-        setIsSignUp(false);
-      } else {
-        // Login API call
-        const res = await axios.post("http://localhost:5000/login", values);
         
-        // เก็บ token และข้อมูลผู้ใช้ลงใน localStorage
-        if (res.data && res.data.token) {
-          localStorage.setItem('token', res.data.token);
-          localStorage.setItem('user', JSON.stringify(res.data.user));
-          message.success("Login successful!");
-          navigate("/");
-        } else if (res.data === "User signed in") {
-          // กรณีเซิร์ฟเวอร์ยังไม่ได้แก้ไขให้ส่ง token กลับมา
+        if (res.data && res.data.status === "success") {
+          message.success("Sign up successful!");
+          setIsSignUp(false);
+        } else {
+          message.error(res.data.message || "Failed to sign up");
+        }
+      } else {
+        // Login
+        const result = await login(values);
+        
+        if (result.success) {
           message.success("Login successful!");
           navigate("/");
         } else {
-          message.error("Login failed: No token received");
+          message.error(result.message);
         }
       }
     } catch (error) {
-      message.error(error.response?.data?.message || "Something went wrong");
+      message.error("Error: " + (error.response?.data?.message || "Something went wrong"));
     }
   };
-
-  // สร้างฟังก์ชันสำหรับตรวจสอบว่ามี token อยู่ใน localStorage หรือไม่
-  const checkAuth = () => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      navigate('/');
-    }
-  };
-
-  // เรียกใช้ฟังก์ชัน checkAuth เมื่อคอมโพเนนต์ถูกโหลด
-  React.useEffect(() => {
-    checkAuth();
-  }, []);
 
   const styles = {
     container: {
