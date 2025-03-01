@@ -46,7 +46,6 @@ const LoginPage = () => {
             method: "POST",
             headers: {
               Authorization: `Bearer ${token}`, // Send token for authentication
-              type:"login"
             },
           });
           navigate("/home"); // Changed from '/' to '/home'
