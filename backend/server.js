@@ -30,16 +30,48 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage })
 
-app.post("/single", upload.single("image"), async(req, res) => {
+app.post("/single", upload.single("image"), async (req, res) => {
   try {
-    const {path, filename} = req.file
-    const image = await ImageDetails({path, filename})
-    await image.save()
-    res.send({"msg":"Image Uploaded"})
+    // Extract and verify token from Authorization header
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+      return res.status(401).json({ error: "User not authenticated" });
+    }
+
+    jwt.verify(token, 'secret', async (err, decodedUser) => {
+      if (err) {
+        return res.status(401).json({ error: "Invalid token" });
+      }
+
+      // Extract user ID and username from the decoded token
+      const userId = decodedUser._id;
+      const username = decodedUser.username;
+
+      // Extract file details
+      const { path, filename } = req.file;
+
+      // Save image details in the database
+      const image = new ImageDetails({
+        path,
+        filename,
+        userId, // Save user ID
+        username // Save username
+      });
+
+      await image.save();
+
+      res.json({
+        msg: "Image Uploaded",
+        imageId: image._id,
+        imageUrl: `http://localhost:5000/image/${image._id}`,
+      });
+    });
   } catch (error) {
-    res.send({"error":"Unable to Uploaded Image"})
+    res.status(500).json({ error: "Unable to upload image" });
   }
-})
+});
 
 app.get("/image/:id", async(req, res) => {
   const {id} = req.params
@@ -104,7 +136,7 @@ app.post('/login', (req, res) => {
 // Updated USER ROUTE (Using Authorization header)
 app.get('/user', (req, res) => {
   const authHeader = req.headers['authorization']
-  const token = authHeader && authHeader.split(' ')[1] // Bearer TOKEN format
+  const token = authHeader && authHeader.split(' ')[1] // อันนี้แค่ เอาคำว่า bareer ใน response ออกเฉยๆ มันจะได้เก็บ token เลย
   
   if (token) {
     jwt.verify(token, 'secret', (err, user) => {  
