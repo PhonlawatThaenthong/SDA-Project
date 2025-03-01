@@ -419,12 +419,6 @@ function FileUpload() {
       render: (_, record) => getFileTypeTag(record),
     },
     {
-      title: 'ขนาด',
-      dataIndex: 'size',
-      key: 'size',
-      render: (size) => formatFileSize(size),
-    },
-    {
       title: 'วันที่อัปโหลด',
       dataIndex: 'createdAt',
       key: 'createdAt',

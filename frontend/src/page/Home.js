@@ -17,7 +17,7 @@ const Home = () => {
   // Add this effect to redirect authenticated users to /home
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/main'); //อันนี้ redirect -> auth user จะ page ไหน
+      navigate('/home'); //อันนี้ redirect -> auth user จะ page ไหน
     }
   }, [isAuthenticated, navigate]);
 

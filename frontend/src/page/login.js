@@ -19,7 +19,7 @@ const LoginPage = () => {
   // Check if user is already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/main'); //อันนี้ redirect -> auth user จะ page ไหน
+      navigate('/home'); //อันนี้ redirect -> auth user จะ page ไหน
     }
   }, [isAuthenticated, navigate]);
 
