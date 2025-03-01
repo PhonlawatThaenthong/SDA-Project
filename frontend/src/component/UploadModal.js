@@ -3,7 +3,8 @@ import { Modal, Upload, Button, message, Progress, Typography } from 'antd';
 import { 
   InboxOutlined, 
   FileOutlined,
-  CloseOutlined
+  CloseOutlined,
+  CheckCircleOutlined
 } from '@ant-design/icons';
 
 const { Dragger } = Upload;
@@ -12,12 +13,57 @@ const { Text } = Typography;
 const UploadModal = ({ visible, onCancel }) => {
   const [fileList, setFileList] = useState([]);
   const [uploading, setUploading] = useState(false);
-  
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadLoading, setUploadLoading] = useState(false);
+
+  const handleUpload = async (options) => {
+    const { file, onSuccess, onError, onProgress } = options;
+    
+    const formData = new FormData();
+    formData.append("file", file);
+    
+    setUploadLoading(true);
+    const token = localStorage.getItem("token");
+    
+    try {
+      // อัพโหลดไฟล์จริง
+      const response = await fetch("http://localhost:5000/upload", {
+        method: "POST",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const result = await response.json();
+      
+      if (response.ok) {
+        // อัพโหลดสำเร็จ
+        message.success({
+          content: "อัพโหลดไฟล์สำเร็จ",
+          icon: <CheckCircleOutlined style={{ color: '#52c41a' }} />
+        });
+        onSuccess(result, file);
+        setUploadProgress(100); // ตั้งค่าสถานะว่าอัพโหลดเสร็จแล้ว
+      } else {
+        // อัพโหลดล้มเหลว
+        message.error(result.error || "อัพโหลดไฟล์ล้มเหลว");
+        onError(new Error(result.error));
+      }
+    } catch (error) {
+      console.error("Upload failed:", error);
+      message.error("อัพโหลดไฟล์ล้มเหลว");
+      onError(error);
+    } finally {
+      setUploadLoading(false);
+    }
+  };
+
   const props = {
     name: 'file',
     multiple: true,
     fileList,
-    action: '//placeholder-api-endpoint/upload',
+    customRequest: handleUpload,
     onChange(info) {
       const { status } = info.file;
       
@@ -38,29 +84,21 @@ const UploadModal = ({ visible, onCancel }) => {
     onDrop(e) {
       console.log('Dropped files', e.dataTransfer.files);
     },
-    progress: {
-      strokeColor: {
-        '0%': '#108ee9',
-        '100%': '#87d068',
-      },
-      size: 3,
-      format: percent => `${parseFloat(percent.toFixed(2))}%`,
-    },
     showUploadList: {
       showDownloadIcon: false,
       showRemoveIcon: true,
       removeIcon: <CloseOutlined />,
     },
   };
-  
+
   const handleOk = () => {
     if (fileList.length === 0) {
       message.warning('กรุณาเลือกไฟล์ที่ต้องการอัพโหลด');
       return;
     }
-    
+
     setUploading(true);
-    
+
     // จำลองการอัพโหลด
     setTimeout(() => {
       setUploading(false);
@@ -69,7 +107,7 @@ const UploadModal = ({ visible, onCancel }) => {
       message.success('อัพโหลดไฟล์ทั้งหมดเรียบร้อยแล้ว');
     }, 2000);
   };
-  
+
   return (
     <Modal
       title="อัพโหลดไฟล์"
@@ -100,11 +138,11 @@ const UploadModal = ({ visible, onCancel }) => {
           รองรับไฟล์เดี่ยวหรือหลายไฟล์ ขนาดไฟล์สูงสุด 100MB ต่อไฟล์
         </p>
       </Dragger>
-      
+
       {fileList.length > 0 && uploading && (
         <div style={{ marginTop: 16 }}>
           <Text>กำลังอัพโหลด...</Text>
-          <Progress percent={45} status="active" />
+          <Progress percent={uploadProgress} status="active" />
         </div>
       )}
     </Modal>
