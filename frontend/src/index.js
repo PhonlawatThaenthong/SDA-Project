@@ -14,6 +14,7 @@ import ProtectedRoute from "./component/ProtectedRoute"; // Import the new compo
 import reportWebVitals from "./reportWebVitals";
 import Upload from "./page/Upload";
 import { AuthProvider } from "./context/AuthContext";
+import Logs from "./page/logs";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -24,6 +25,7 @@ root.render(
         <Router>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/logs" element={<Logs />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/usersetting" element={
               <ProtectedRoute>
@@ -45,6 +47,7 @@ root.render(
                 <Upload />
               </ProtectedRoute>
             } />
+            
           </Routes>
         </Router>
       </AuthProvider>

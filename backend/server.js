@@ -9,6 +9,7 @@ const fs = require("fs");
 
 const UserModel = require("./user");
 const { ImageDetails } = require("./imagedetail");
+const Log = require("./logsUser");
 
 const app = express();
 app.use(express.json());
@@ -20,6 +21,18 @@ mongoose.connect("mongodb+srv://admin:1234@cluster0.5ojwu.mongodb.net/?retryWrit
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
+
+app.get('/logs', async (req, res) => {
+  try {
+    const logs = await Log.find().sort({ timestamp: -1 });
+    res.json(logs);
+  } catch (err) {
+    res.status(500).send('Error retrieving logs');
+  }
+});
+
+// Add log entry
+
 
 // Multer Configuration (For File Upload)
 const storage = multer.diskStorage({
@@ -42,6 +55,18 @@ const authenticateToken = (req, res, next) => {
     next();
   });
 };
+
+app.post('/logs', authenticateToken, async (req, res) => {
+  const { message, level } = req.body;
+  const newLog = new Log({ message, level,userId: req.user._id,
+    username: req.user.username,});
+  try {
+    await newLog.save();
+    res.status(200).send('Log saved');
+  } catch (err) {
+    res.status(500).send('Error saving log');
+  }
+});
 
 // Upload File API
 app.post("/upload", authenticateToken, upload.single("file"), async (req, res) => {
