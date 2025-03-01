@@ -4,225 +4,155 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
-const UserModel = require('./user');
-const { ImageDetails } = require("./imagedetail");
 const path = require("path");
 const fs = require("fs");
 
+const UserModel = require("./user");
+const { ImageDetails } = require("./imagedetail");
+
 const app = express();
-app.use(express.json()); // Enable JSON parsing
-app.use(cors()); // Enable CORS
+app.use(express.json());
+app.use(cors());
 app.use(express.static("uploads"));
 
-// Connect to MongoDB
+// MongoDB Connection
 mongoose.connect("mongodb+srv://admin:1234@cluster0.5ojwu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
 
+// Multer Configuration (For File Upload)
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './uploads')
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname )
-  }
-})
-
-const upload = multer({ storage })
-
-app.post("/single", upload.single("image"), async (req, res) => {
-  try {
-    // Extract and verify token from Authorization header
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-
-    if (!token) {
-      return res.status(401).json({ error: "User not authenticated" });
-    }
-
-    jwt.verify(token, 'secret', async (err, decodedUser) => {
-      if (err) {
-        return res.status(401).json({ error: "Invalid token" });
-      }
-
-      // Extract user ID and username from the decoded token
-      const userId = decodedUser._id;
-      const username = decodedUser.username;
-
-      // Extract file details
-      const { path, filename } = req.file;
-
-      // Save image details in the database
-      const image = new ImageDetails({
-        path,
-        filename,
-        userId, // Save user ID
-        username // Save username
-      });
-
-      await image.save();
-
-      res.json({
-        msg: "Image Uploaded",
-        imageId: image._id,
-        imageUrl: `http://localhost:5000/image/${image._id}`,
-      });
-    });
-  } catch (error) {
-    res.status(500).json({ error: "Unable to upload image" });
-  }
+  destination: (req, file, cb) => cb(null, "./uploads"),
+  filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
 });
+const upload = multer({ storage });
 
-app.get("/image/:id", async(req, res) => {
-  const {id} = req.params
+// Middleware for authentication
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) return res.status(401).json({ error: "User not authenticated" });
+
+  jwt.verify(token, "secret", (err, decodedUser) => {
+    if (err) return res.status(403).json({ error: "Invalid token" });
+
+    req.user = decodedUser;
+    next();
+  });
+};
+
+// Upload File API
+app.post("/upload", authenticateToken, upload.single("file"), async (req, res) => {
   try {
-    const image = await ImageDetails.findById(id)
-    if (!image) res.send({"msg":"Image Not Found"})
-    
-    const imagePath = path.join(__dirname, "uploads", image.filename)
-    res.sendFile(imagePath)
-  } catch (error) {
-    res.send({"error":"Unable to get Image"})
-  }
-})
-
-app.get("/images", async (req, res) => {
-  try {
-    const images = await ImageDetails.find();
-    res.json(images);
-  } catch (error) {
-    res.status(500).json({ error: "Unable to fetch images" });
-  }
-});
-
-app.delete("/image/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const image = await ImageDetails.findById(id);
-
-    if (!image) {
-      return res.status(404).json({ error: "Image not found" });
-    }
-
-    // Remove the file from the uploads folder
-    const imagePath = `./uploads/${image.filename}`;
-    fs.unlink(imagePath, (err) => {
-      if (err) {
-        console.error("Error deleting file:", err);
-      }
+    const { path, filename, mimetype } = req.file;
+    const file = new ImageDetails({
+      path,
+      filename,
+      mimetype,
+      userId: req.user._id,
+      username: req.user.username,
     });
 
-    // Remove image from the database
-    await ImageDetails.findByIdAndDelete(id);
-
-    res.json({ msg: "Image deleted successfully", imageId: id });
+    await file.save();
+    res.json({ msg: "File uploaded successfully!", fileId: file._id });
   } catch (error) {
-    res.status(500).json({ error: "Unable to delete image" });
+    res.status(500).json({ error: "Unable to upload file" });
   }
 });
 
+// Get All Uploaded Files
+app.get("/files", async (req, res) => {
+  try {
+    const files = await ImageDetails.find();
+    res.json(files);
+  } catch (error) {
+    res.status(500).json({ error: "Unable to fetch files" });
+  }
+});
+
+// Serve Files (Images, PDFs, Videos, etc.)
+app.get("/file/:id", async (req, res) => {
+  try {
+    const file = await ImageDetails.findById(req.params.id);
+    if (!file) return res.status(404).json({ error: "File not found" });
+
+    res.sendFile(path.join(__dirname, "uploads", file.filename));
+  } catch (error) {
+    res.status(500).json({ error: "Unable to retrieve file" });
+  }
+});
+
+// Delete File API
+app.delete("/file/:id", authenticateToken, async (req, res) => {
+  try {
+    const file = await ImageDetails.findById(req.params.id);
+    if (!file) return res.status(404).json({ error: "File not found" });
+
+    fs.unlink(`./uploads/${file.filename}`, (err) => {
+      if (err) console.error("Error deleting file:", err);
+    });
+
+    await ImageDetails.findByIdAndDelete(req.params.id);
+    res.json({ msg: "File deleted successfully", fileId: req.params.id });
+  } catch (error) {
+    res.status(500).json({ error: "Unable to delete file" });
+  }
+});
+
+// User Model
 const UserSchema = new mongoose.Schema({
+  username: String,
   email: String,
   password: String,
 });
 const User = mongoose.model("User", UserSchema);
 
-// Updated LOGIN ROUTE (Returning only token)
-app.post('/login', (req, res) => {
-  const { email, password } = req.body
+// User Signup
+app.post("/signup", async (req, res) => {
+  const { username, email, password } = req.body;
 
-  UserModel.findOne({ email: email })
-  .then(user => {
-    if (user) {
-      bcrypt.compare(password, user.password, (err, response) => {
-        if(response) {
-          const token = jwt.sign(
-            { _id: user._id, email: user.email, username: user.username }, 
-            'secret', 
-            { expiresIn: '1hr' }
-          )
-          
-          return res.json({
-            status: "success",
-            message: "User signed in successfully",
-            token: token,
-            user: {
-              _id: user._id,
-              email: user.email,
-              username: user.username
-            }
-          })
-        } else {
-          return res.json({
-            status: "error",
-            message: "Email or password is incorrect"
-          })
-        }
-      })
-    } else {
-      return res.json({
-        status: "error",
-        message: "User not found"
-      })
-    }
-  })
-})
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = await UserModel.create({ username, email, password: hashedPassword });
 
-// Updated USER ROUTE (Using Authorization header)
-app.get('/user', (req, res) => {
-  const authHeader = req.headers['authorization']
-  const token = authHeader && authHeader.split(' ')[1] // อันนี้แค่ เอาคำว่า bareer ใน response ออกเฉยๆ มันจะได้เก็บ token เลย
-  
-  if (token) {
-    jwt.verify(token, 'secret', (err, user) => {  
-      if (err) {
-        return res.status(401).json({
-          status: "error",
-          message: "User not authenticated"
-        })
-      }
-      return res.json({
-        status: "success",
-        user
-      })
-    })
-  } else {
-    return res.status(401).json({
-      status: "error",
-      message: "User not authenticated"
-    })
+    res.json({ status: "success", message: "User created successfully", user: newUser });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: "Error creating user", error });
   }
-})
+});
 
-// Updated SIGNOUT ROUTE
-app.post('/signout', (req, res) => {
-  return res.json({
-    status: "success",
-    message: "User signed out"
-  });
-})
+// User Login (Returns Token)
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
 
-// SIGNUP ROUTE
-app.post('/signup', (req, res) => {
-  const {username, email, password} = req.body;
-  bcrypt.hash(password, 10)
-  .then(hash => {
-    UserModel.create({username, email, password: hash})
-    .then(users => res.json({
-      status: "success", 
-      message: "User created successfully",
-      user: users
-    }))
-    .catch(err => res.json({
-      status: "error",
-      message: "Error creating user",
-      error: err
-    }))
-  })
-})
+  try {
+    const user = await UserModel.findOne({ email });
+    if (!user) return res.status(401).json({ status: "error", message: "User not found" });
 
-// Start the Server
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).json({ status: "error", message: "Invalid credentials" });
+
+    const token = jwt.sign({ _id: user._id, email: user.email, username: user.username }, "secret", { expiresIn: "1h" });
+
+    res.json({ status: "success", message: "User signed in", token, user: { _id: user._id, email: user.email, username: user.username } });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: "Login error", error });
+  }
+});
+
+// Get Authenticated User
+app.get("/user", authenticateToken, (req, res) => {
+  res.json({ status: "success", user: req.user });
+});
+
+// User Signout
+app.post("/signout", (req, res) => {
+  res.json({ status: "success", message: "User signed out" });
+});
+
+// Start Server
 const PORT = 5000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
