@@ -16,7 +16,6 @@ import FavoritesList from '../component/FavoritesList';
 import TrashList from '../component/TrashList';
 import UploadModal from '../component/UploadModal';
 import UserProfileModal from '../component/UserProfileModal';
-
 const { Header, Sider, Content } = Layout;
 const { Text } = Typography;
 const { Search } = Input;
