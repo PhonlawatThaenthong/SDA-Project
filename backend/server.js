@@ -62,10 +62,10 @@ app.post("/upload", authenticateToken, upload.single("file"), async (req, res) =
   }
 });
 
-// Get All Uploaded Files
-app.get("/files", async (req, res) => {
+// Get All Files uploaded by the authenticated user
+app.get("/files", authenticateToken, async (req, res) => {
   try {
-    const files = await ImageDetails.find();
+    const files = await ImageDetails.find({ userId: req.user._id }); // Filter by userId
     res.json(files);
   } catch (error) {
     res.status(500).json({ error: "Unable to fetch files" });
