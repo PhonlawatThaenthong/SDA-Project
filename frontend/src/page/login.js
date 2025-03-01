@@ -42,10 +42,11 @@ const LoginPage = () => {
         if (result.success) {
           message.success("Login successful!");
           const token = localStorage.getItem("token");
-          const response = await fetch(`http://localhost:5000/logs`, {
+          const response = await fetch(`http://localhost:5000/logs-login`, {
             method: "POST",
             headers: {
               Authorization: `Bearer ${token}`, // Send token for authentication
+              type:"login"
             },
           });
           navigate("/home"); // Changed from '/' to '/home'

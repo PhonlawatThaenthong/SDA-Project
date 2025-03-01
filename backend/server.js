@@ -56,10 +56,10 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-app.post('/logs', authenticateToken, async (req, res) => {
+app.post('/logs-login', authenticateToken, async (req, res) => {
   const { message, level } = req.body;
   const newLog = new Log({ message, level,userId: req.user._id,
-    username: req.user.username,});
+    username: req.user.username,type:"login"});
   try {
     await newLog.save();
     res.status(200).send('Log saved');

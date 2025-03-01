@@ -6,6 +6,7 @@ const logSchema = new mongoose.Schema({
   message: String,
   level: String,
   timestamp: { type: Date, default: Date.now },
+  type: String,
 });
 
 const Log = mongoose.model('Log', logSchema);
