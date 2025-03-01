@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const UserModel = require('./user');
 const { ImageDetails } = require("./imagedetail");
 const path = require("path");
+const fs = require("fs");
 
 const app = express();
 app.use(express.json()); // Enable JSON parsing
@@ -85,6 +86,41 @@ app.get("/image/:id", async(req, res) => {
     res.send({"error":"Unable to get Image"})
   }
 })
+
+app.get("/images", async (req, res) => {
+  try {
+    const images = await ImageDetails.find();
+    res.json(images);
+  } catch (error) {
+    res.status(500).json({ error: "Unable to fetch images" });
+  }
+});
+
+app.delete("/image/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const image = await ImageDetails.findById(id);
+
+    if (!image) {
+      return res.status(404).json({ error: "Image not found" });
+    }
+
+    // Remove the file from the uploads folder
+    const imagePath = `./uploads/${image.filename}`;
+    fs.unlink(imagePath, (err) => {
+      if (err) {
+        console.error("Error deleting file:", err);
+      }
+    });
+
+    // Remove image from the database
+    await ImageDetails.findByIdAndDelete(id);
+
+    res.json({ msg: "Image deleted successfully", imageId: id });
+  } catch (error) {
+    res.status(500).json({ error: "Unable to delete image" });
+  }
+});
 
 const UserSchema = new mongoose.Schema({
   email: String,
