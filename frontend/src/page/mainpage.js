@@ -21,7 +21,7 @@ const { Header, Sider, Content } = Layout;
 const { Text } = Typography;
 const { Search } = Input;
 
-const App = () => {
+const MainPage = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [isUploadModalVisible, setIsUploadModalVisible] = useState(false);
   const [isUserProfileVisible, setIsUserProfileVisible] = useState(false);
@@ -227,4 +227,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default MainPage;

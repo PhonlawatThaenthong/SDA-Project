@@ -1,6 +1,7 @@
 // src/page/Home.js
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Layout, Row, Col, Button, Typography, Card, message } from 'antd';
+import { useNavigate } from 'react-router-dom'; // Add this import
 import CustomHeader from '../component/Header';
 import CustomFooter from '../component/Footer';
 import '../component/home component/style.css';
@@ -11,6 +12,19 @@ const { Title, Paragraph } = Typography;
 
 const Home = () => {
   const { isAuthenticated, user } = useContext(AuthContext);
+  const navigate = useNavigate(); // Add this hook
+
+  // Add this effect to redirect authenticated users to /home
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/main'); //อันนี้ redirect -> auth user จะ page ไหน
+    }
+  }, [isAuthenticated, navigate]);
+
+  // Add this handler for the Get Started button
+  const handleGetStarted = () => {
+    navigate('/login');
+  };
 
   return (
     <Layout>
@@ -22,7 +36,14 @@ const Home = () => {
           <Paragraph style={{ fontSize: '20px', color: '#fff' }}>
             This is a place to show your awesome product or service.
           </Paragraph>
-          <Button type="primary" size="large" style={{ marginTop: '20px' }}>Get Started</Button>
+          <Button 
+            type="primary" 
+            size="large" 
+            style={{ marginTop: '20px' }}
+            onClick={handleGetStarted} // Add onClick handler
+          >
+            Get Started
+          </Button>
         </div>
       </div>
 
