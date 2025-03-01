@@ -15,7 +15,12 @@ import {
   Popconfirm,
   Divider,
   Tag,
-  Tooltip
+  Tooltip,
+  Select,
+  Space,
+  Table,
+  Dropdown,
+  Menu
 } from "antd";
 import { 
   UploadOutlined, 
@@ -37,10 +42,19 @@ import {
   CheckCircleOutlined,
   LoadingOutlined,
   InfoCircleOutlined,
-  RedoOutlined} from "@ant-design/icons";
+  RedoOutlined,
+  FilterOutlined,
+  SortAscendingOutlined,
+  AppstoreOutlined,
+  BarsOutlined,
+  MoreOutlined,
+  DownloadOutlined,
+  ShareAltOutlined
+} from "@ant-design/icons";
 
 const { Title, Text, Paragraph } = Typography;
 const { Dragger } = Upload;
+const { Option } = Select;
 
 function FileUpload() {
   const [files, setFiles] = useState([]);
@@ -50,6 +64,11 @@ function FileUpload() {
   const [previewTitle, setPreviewTitle] = useState("");
   const [uploadLoading, setUploadLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  
+  // เพิ่มตัวแปรสำหรับการกรอง เรียงลำดับ และมุมมอง
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' หรือ 'list'
+  const [filterType, setFilterType] = useState('all');
+  const [sortBy, setSortBy] = useState('name'); // 'name', 'date', หรือ 'size'
 
   // Fetch files from the backend
   useEffect(() => {
@@ -202,7 +221,7 @@ function FileUpload() {
     }
   };
 
-  // Get large file icon for preview modal
+  // ฟังก์ชันสำหรับไอคอนขนาดใหญ่
   const getLargeFileIcon = (filename) => {
     if (!filename) return <FileUnknownOutlined style={{ fontSize: "64px", color: "#8c8c8c" }} />;
     
@@ -337,6 +356,114 @@ function FileUpload() {
     }
   };
 
+  // ฟังก์ชันสำหรับกรองประเภทไฟล์
+  const getFilteredFiles = () => {
+    let filtered = [...files];
+    
+    // กรองตามประเภทไฟล์
+    if (filterType !== 'all') {
+      filtered = filtered.filter(file => {
+        const ext = getFileExtension(file.filename);
+        
+        if (filterType === 'image' && isImageFile(file)) {
+          return true;
+        } else if (filterType === 'pdf' && ext === 'pdf') {
+          return true;
+        } else if (filterType === 'word' && (ext === 'doc' || ext === 'docx')) {
+          return true;
+        } else if (filterType === 'excel' && (ext === 'xls' || ext === 'xlsx' || ext === 'csv')) {
+          return true;
+        } else if (filterType === 'text' && ext === 'txt') {
+          return true;
+        } else if (filterType === 'video' && (ext === 'mp4' || ext === 'avi' || ext === 'mov' || ext === 'wmv' || ext === 'webm')) {
+          return true;
+        } else if (filterType === 'audio' && (ext === 'mp3' || ext === 'wav' || ext === 'ogg')) {
+          return true;
+        }
+        
+        return false;
+      });
+    }
+    
+    // เรียงลำดับ
+    filtered.sort((a, b) => {
+      if (sortBy === 'name') {
+        return a.filename.localeCompare(b.filename);
+      } else if (sortBy === 'date') {
+        return new Date(b.createdAt || 0) - new Date(a.createdAt || 0); // เรียงจากใหม่ไปเก่า
+      } else if (sortBy === 'size') {
+        return (b.size || 0) - (a.size || 0); // เรียงจากใหญ่ไปเล็ก
+      }
+      return 0;
+    });
+    
+    return filtered;
+  };
+
+  // สร้าง columns สำหรับมุมมองตาราง
+  const columns = [
+    {
+      title: 'ชื่อไฟล์',
+      dataIndex: 'filename',
+      key: 'filename',
+      render: (text, record) => (
+        <Space>
+          {getFileIcon(record)}
+          <div>{text}</div>
+        </Space>
+      ),
+    },
+    {
+      title: 'ประเภท',
+      key: 'type',
+      render: (_, record) => getFileTypeTag(record),
+    },
+    {
+      title: 'ขนาด',
+      dataIndex: 'size',
+      key: 'size',
+      render: (size) => formatFileSize(size),
+    },
+    {
+      title: 'วันที่อัปโหลด',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      render: (date) => new Date(date || Date.now()).toLocaleDateString('th-TH', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric'
+      }),
+    },
+    {
+      title: '',
+      key: 'action',
+      render: (_, record) => (
+        <Space>
+          <Button 
+            type="text" 
+            icon={<EyeOutlined />} 
+            onClick={() => handlePreview(record)} 
+          />
+          <Popconfirm
+            title="คุณต้องการลบไฟล์นี้หรือไม่?"
+            description="การกระทำนี้ไม่สามารถเรียกคืนได้"
+            onConfirm={() => handleDelete(record._id)}
+            okText="ใช่"
+            cancelText="ไม่"
+          >
+            <Button 
+              type="text" 
+              danger 
+              icon={<DeleteOutlined />} 
+            />
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ];
+
+  const filteredFiles = getFilteredFiles();
+
   return (
     <div style={{ padding: "20px", maxWidth: "1500px", margin: "0 auto", background: "#fff", borderRadius: "8px", boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}>
 
@@ -347,11 +474,11 @@ function FileUpload() {
         
         <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
           <Button
-            type="default" // ใช้ type="default" เพื่อให้เป็นสีเทา
+            type="default"
             icon={<RedoOutlined />}
-            onClick={fetchFiles} // เมื่อคลิกปุ่มจะเรียกใช้ฟังก์ชัน fetchFiles
-            size="small" // ทำให้ปุ่มขนาดเล็ก
-            style={{ borderRadius: '4px' }} // ปรับมุมปุ่มให้มน
+            onClick={fetchFiles}
+            size="small"
+            style={{ borderRadius: '4px' }}
           >
             Refresh
           </Button>
@@ -365,25 +492,76 @@ function FileUpload() {
       
       <Divider style={{ margin: "16px 0 24px" }} />
 
+      {/* เพิ่มส่วนกรองและเรียงลำดับ */}
+      <div className="file-tools" style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Space>
+          <Select
+            placeholder="ประเภทไฟล์"
+            style={{ width: 150 }}
+            value={filterType}
+            onChange={value => setFilterType(value)}
+            suffixIcon={<FilterOutlined />}
+          >
+            <Option value="all">ทั้งหมด</Option>
+            <Option value="pdf">PDF</Option>
+            <Option value="image">รูปภาพ</Option>
+            <Option value="word">Word</Option>
+            <Option value="excel">Excel</Option>
+            <Option value="text">Text</Option>
+            <Option value="video">วิดีโอ</Option>
+            <Option value="audio">เสียง</Option>
+          </Select>
+          
+          <Select
+            placeholder="เรียงตาม"
+            style={{ width: 150 }}
+            value={sortBy}
+            onChange={value => setSortBy(value)}
+            suffixIcon={<SortAscendingOutlined />}
+          >
+            <Option value="name">ชื่อ</Option>
+            <Option value="date">วันที่อัปโหลด</Option>
+            <Option value="size">ขนาด</Option>
+          </Select>
+        </Space>
+        
+        <Space>
+          <Tooltip title="มุมมองกริด">
+            <Button 
+              type={viewMode === 'grid' ? 'primary' : 'default'} 
+              icon={<AppstoreOutlined />} 
+              onClick={() => setViewMode('grid')}
+            />
+          </Tooltip>
+          <Tooltip title="มุมมองตาราง">
+            <Button 
+              type={viewMode === 'list' ? 'primary' : 'default'} 
+              icon={<BarsOutlined />} 
+              onClick={() => setViewMode('list')}
+            />
+          </Tooltip>
+        </Space>
+      </div>
+
       {loading ? (
         <div style={{ textAlign: "center", padding: "60px 0" }}>
           <Spin size="large" />
           <div style={{ marginTop: "16px", color: "#1890ff" }}>กำลังโหลดไฟล์...</div>
         </div>
-      ) : files.length === 0 ? (
+      ) : filteredFiles.length === 0 ? (
         <Empty 
           image={Empty.PRESENTED_IMAGE_SIMPLE} 
           description={
             <div>
-              <p>ยังไม่มีไฟล์ที่อัพโหลด</p>
-              <Text type="secondary">อัพโหลดไฟล์แรกของคุณเลย!</Text>
+              <p>ไม่พบไฟล์ที่ตรงตามเงื่อนไข</p>
+              <Text type="secondary">ลองเปลี่ยนตัวกรองหรืออัปโหลดไฟล์ใหม่</Text>
             </div>
           } 
           style={{ padding: "60px 0" }} 
         />
-      ) : (
+      ) : viewMode === 'grid' ? (
         <Row gutter={[16, 16]}>
-          {files.map((file) => (
+          {filteredFiles.map((file) => (
             <Col xs={24} sm={12} md={8} lg={6} key={file._id}>
               <Card
                 hoverable
@@ -509,6 +687,14 @@ function FileUpload() {
             </Col>
           ))}
         </Row>
+      ) : (
+        // แสดงแบบตาราง
+        <Table 
+          columns={columns} 
+          dataSource={filteredFiles}
+          rowKey="_id"
+          pagination={{ pageSize: 10 }}
+        />
       )}
 
       <Modal
