@@ -68,6 +68,18 @@ app.post('/logs-login', authenticateToken, async (req, res) => {
   }
 });
 
+app.post('/logs-logout', authenticateToken, async (req, res) => {
+  const { message, level } = req.body;
+  const newLog = new Log({ message, level,userId: req.user._id,
+    username: req.user.username,type:"logout"});
+  try {
+    await newLog.save();
+    res.status(200).send('Log saved');
+  } catch (err) {
+    res.status(500).send('Error saving log');
+  }
+});
+
 // Upload File API
 app.post("/upload", authenticateToken, upload.single("file"), async (req, res) => {
   try {

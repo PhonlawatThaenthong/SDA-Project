@@ -17,7 +17,7 @@ function Logs() {
       <ul>
         {logs.map(log => (
           <li key={log._id}>
-            <strong>{log.level}</strong>: {log.message} <em>({new Date(log.timestamp).toLocaleString()})</em>
+            <strong>{log.username}</strong>: {log.type} <em>({new Date(log.timestamp).toLocaleString()})</em>
           </li>
         ))}
       </ul>
