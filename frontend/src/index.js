@@ -6,6 +6,7 @@ import th_TH from "antd/locale/th_TH";
 import "./index.css";
 import "antd/dist/reset.css"; // Ant Design 5.x
 import App from "./App";
+import MainPage from "./page/mainpage"
 import LoginPage from "./page/login";
 import UserSettingPage from "./page/UserSettingPage";
 import Home from "./page/Home";
@@ -27,6 +28,11 @@ root.render(
             <Route path="/usersetting" element={
               <ProtectedRoute>
                 <UserSettingPage />
+              </ProtectedRoute>
+            } />
+             <Route path="/main" element={
+              <ProtectedRoute>
+                <MainPage />
               </ProtectedRoute>
             } />
             <Route path="/home" element={
