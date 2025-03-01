@@ -43,6 +43,13 @@ const UploadModal = ({ visible, onCancel }) => {
           content: "อัพโหลดไฟล์สำเร็จ",
           icon: <CheckCircleOutlined style={{ color: '#52c41a' }} />
         });
+        const token = localStorage.getItem("token");
+        const response = await fetch(`http://localhost:5000/logs-upload`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`, // Send token for authentication
+          },
+        });
         onSuccess(result, file);
         setUploadProgress(100); // ตั้งค่าสถานะว่าอัพโหลดเสร็จแล้ว
       } else {

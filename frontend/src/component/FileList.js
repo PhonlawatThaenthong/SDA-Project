@@ -95,6 +95,13 @@ function FileUpload() {
           content: "ลบไฟล์สำเร็จ",
           icon: <CheckCircleOutlined style={{ color: '#52c41a' }} />
         });
+        const token = localStorage.getItem("token");
+        const response = await fetch(`http://localhost:5000/logs-remove-file`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`, // Send token for authentication
+          },
+        });
         setFiles((prevFiles) => prevFiles.filter((file) => file._id !== id));
       } else {
         message.error(data.error || "ลบไฟล์ล้มเหลว");
