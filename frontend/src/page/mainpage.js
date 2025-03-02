@@ -13,8 +13,6 @@ import {
   WarningOutlined
 } from '@ant-design/icons';
 import FileList from '../component/FileList';
-import FavoritesList from '../component/FavoritesList';
-import TrashList from '../component/TrashList';
 import UploadModal from '../component/UploadModal';
 import UserProfileModal from '../component/UserProfileModal';
 import { StorageContext } from '../context/StorageContext';
@@ -155,12 +153,6 @@ const MainPage = () => {
     switch(currentPage) {
       case 'files':
         return <FileList onFileChange={refreshStorage} />;
-      case 'favorites':
-        return <FavoritesList />;
-      case 'shared':
-        return <div>พื้นที่ใช้งานร่วม</div>; // ยังไม่มีคอมโพเนนต์ เลยใส่ placeholder ไว้ก่อน
-      case 'trash':
-        return <TrashList onFileChange={refreshStorage} />;
       default:
         return <FileList onFileChange={refreshStorage} />;
     }
@@ -201,16 +193,6 @@ const MainPage = () => {
         >
           <Menu.Item key="files" icon={<HomeOutlined />}>
             ไฟล์ของฉัน
-          </Menu.Item>
-          <Menu.Item key="favorites" icon={<StarOutlined />}>
-            รายการโปรด
-          </Menu.Item>
-          <Menu.Divider />
-          <Menu.Item key="shared" icon={<CloudOutlined />}>
-            พื้นที่ใช้งานร่วม
-          </Menu.Item>
-          <Menu.Item key="trash" icon={<DeleteOutlined />}>
-            ถังขยะ
           </Menu.Item>
         </Menu>
         
