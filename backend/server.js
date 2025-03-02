@@ -239,6 +239,53 @@ app.post("/login", async (req, res) => {
   }
 });
 
+app.get('/user/all-storage', authenticateToken, async (req, res) => {
+  try {
+    // ตรวจสอบว่าผู้ใช้มีสิทธิ์ admin หรือไม่ (ถ้าต้องการจำกัดสิทธิ์)
+    
+    // ดึงข้อมูลการใช้พื้นที่จัดเก็บของผู้ใช้ทั้งหมด
+    const users = await UserModel.find({}).select('_id username');
+    
+    const storageData = [];
+    
+    for (const user of users) {
+      // หาไฟล์ทั้งหมดของผู้ใช้แต่ละคน
+      const files = await ImageDetails.find({ userId: user._id });
+      
+      // คำนวณขนาดรวม
+      let totalSize = 0;
+      files.forEach(file => {
+        if (file.fileSize) {
+          totalSize += file.fileSize;
+        }
+      });
+      
+      // หาวันที่อัพโหลดล่าสุด
+      let lastUpload = null;
+      if (files.length > 0) {
+        const sortedFiles = [...files].sort((a, b) => 
+          new Date(b.uploadDate || b.createdAt) - new Date(a.uploadDate || a.createdAt)
+        );
+        lastUpload = sortedFiles[0].uploadDate || sortedFiles[0].createdAt;
+      }
+      
+      storageData.push({
+        key: user._id.toString(),
+        userId: user._id.toString(),
+        username: user.username,
+        totalFiles: files.length,
+        totalSizeBytes: totalSize,
+        lastUpload: lastUpload
+      });
+    }
+    
+    res.json(storageData);
+  } catch (error) {
+    console.error("Error fetching all users storage data:", error);
+    res.status(500).json({ error: "Unable to retrieve storage information" });
+  }
+});
+
 // Get Authenticated User
 app.get("/user", authenticateToken, (req, res) => {
   res.json({ status: "success", user: req.user });
