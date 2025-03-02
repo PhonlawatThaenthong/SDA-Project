@@ -6,6 +6,7 @@ import {
   CheckCircleOutlined
 } from '@ant-design/icons';
 import { StorageContext } from '../context/StorageContext'; // We'll create this context
+import { config } from '../config.js';
 
 const { Dragger } = Upload;
 const { Text } = Typography;
@@ -39,7 +40,7 @@ const UploadModal = ({ visible, onCancel }) => {
       }, 200);
 
       // อัพโหลดไฟล์จริง
-      const response = await fetch("http://localhost:5000/upload", {
+      const response = await fetch(`${config.serverUrlPrefix}/upload`, {
         method: "POST",
         body: formData,
         headers: {
@@ -57,7 +58,7 @@ const UploadModal = ({ visible, onCancel }) => {
           icon: <CheckCircleOutlined style={{ color: '#52c41a' }} />
         });
         const token = localStorage.getItem("token");
-        await fetch(`http://localhost:5000/logs-upload`, {
+        await fetch(`${config.serverUrlPrefix}/logs-upload`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,

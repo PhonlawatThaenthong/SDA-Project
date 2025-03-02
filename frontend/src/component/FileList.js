@@ -7,6 +7,7 @@ import FileGridView from "./FileListComponent/FileGridView";
 import FileTableView from "./FileListComponent/FileTableView";
 import { fetchFiles as apiFetchFiles, deleteFile } from "./FileListComponent/fileApi";
 import { isImageFile, getFileExtension, getFileCategory } from "./FileListComponent/fileUtils";
+import { config } from '../config.js';
 
 const { Title, Text } = Typography;
 
@@ -66,7 +67,7 @@ function FileList({ onFileChange }) {
         
         // บันทึกประวัติการลบไฟล์
         const token = localStorage.getItem("token");
-        await fetch(`http://localhost:5000/logs-remove-file`, {
+        await fetch(`${config.serverUrlPrefix}/logs-remove-file`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -89,7 +90,7 @@ function FileList({ onFileChange }) {
   };
 
   const handlePreview = (file) => {
-    setPreviewImage(`http://localhost:5000/file/${file._id}`);
+    setPreviewImage(`${config.serverUrlPrefix}/file/${file._id}`);
     setPreviewTitle(file.filename);
     setPreviewVisible(true);
   };

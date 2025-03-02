@@ -37,6 +37,7 @@ import {
   PieChartOutlined,
   ReloadOutlined
 } from '@ant-design/icons';
+import { config } from '../config.js';
 
 const { Title, Text } = Typography;
 const { Header, Content } = Layout;
@@ -75,7 +76,7 @@ function Logs() {
       return;
     }
     
-    axios.get('http://localhost:5000/logs', {
+    axios.get(`${config.serverUrlPrefix}/logs`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -103,7 +104,7 @@ function Logs() {
     }
     
     // เรียกใช้ API endpoint จริงที่ได้เพิ่มไปใน server.js
-    axios.get('http://localhost:5000/user/all-storage', {
+    axios.get(`${config.serverUrlPrefix}/user/all-storage`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -130,7 +131,7 @@ function Logs() {
     try {
       const token = localStorage.getItem("token");
       // Log logout action
-      await fetch(`http://localhost:5000/logs-logout`, {
+      await fetch(`${config.serverUrlPrefix}/logs-logout`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

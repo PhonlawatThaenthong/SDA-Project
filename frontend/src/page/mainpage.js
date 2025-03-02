@@ -13,6 +13,7 @@ import FileList from '../component/FileList';
 import UploadModal from '../component/UploadModal';
 import UserProfileModal from '../component/UserProfileModal';
 import { StorageContext } from '../context/StorageContext';
+import { config } from '../config.js';
 
 const { Header, Sider, Content } = Layout;
 const { Text } = Typography;
@@ -57,7 +58,7 @@ const MainPage = () => {
     try {
       const token = localStorage.getItem("token");
       // Log logout action
-      await fetch(`http://localhost:5000/logs-logout`, {
+      await fetch(`${config.serverUrlPrefix}/logs-logout`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

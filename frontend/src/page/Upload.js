@@ -38,6 +38,7 @@ import {
   LoadingOutlined,
   InfoCircleOutlined
 } from "@ant-design/icons";
+import { config } from '../config.js';
 
 const { Title, Text, Paragraph } = Typography;
 const { Dragger } = Upload;
@@ -60,7 +61,7 @@ function FileUpload() {
     setLoading(true);
     const token = localStorage.getItem("token");
     
-    fetch("http://localhost:5000/files", {
+    fetch(`${config.serverUrlPrefix}/files`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -105,7 +106,7 @@ function FileUpload() {
       
       const progressInterval = simulateProgress();
       
-      const response = await fetch("http://localhost:5000/upload", {
+      const response = await fetch(`${config.serverUrlPrefix}/upload`, {
         method: "POST",
         body: formData,
         headers: {
@@ -124,7 +125,7 @@ function FileUpload() {
           icon: <CheckCircleOutlined style={{ color: '#52c41a' }} />
         });
         const token = localStorage.getItem("token");
-        const response = await fetch(`http://localhost:5000/logs-upload`, {
+        const response = await fetch(`${config.serverUrlPrefix}/logs-upload`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`, // Send token for authentication
@@ -154,7 +155,7 @@ function FileUpload() {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:5000/file/${id}`, {
+      const response = await fetch(`${config.serverUrlPrefix}/file/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -180,7 +181,7 @@ function FileUpload() {
   };
 
   const handlePreview = (file) => {
-    setPreviewImage(`http://localhost:5000/file/${file._id}`);
+    setPreviewImage(`${config.serverUrlPrefix}/file/${file._id}`);
     setPreviewTitle(file.filename);
     setPreviewVisible(true);
   };
@@ -529,7 +530,7 @@ function FileUpload() {
                     >
                       <img
                         alt={file.filename}
-                        src={`http://localhost:5000/file/${file._id}`}
+                        src={`${config.serverUrlPrefix}/file/${file._id}`}
                         style={{ 
                           maxHeight: "100%", 
                           maxWidth: "100%", 

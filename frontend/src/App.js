@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import axios from 'axios';
+import { config } from './config.js';
 
 const App = () => {
   const [data, setData] = useState(null);
@@ -11,7 +12,7 @@ const App = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('http://localhost:5000/user');
+      const response = await fetch(`${config.serverUrlPrefix}/user`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -34,7 +35,7 @@ const App = () => {
         throw new Error("No auth token found");
       }
 
-      const response = await axios.get('http://localhost:5000/user', {
+      const response = await axios.get(`${config.serverUrlPrefix}/user`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
