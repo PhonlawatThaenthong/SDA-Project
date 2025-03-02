@@ -151,7 +151,7 @@ function FileList({ onFileChange }) {
   const filteredFiles = getFilteredFiles();
 
   return (
-    <div style={{ padding: "20px", maxWidth: "1500px", margin: "0 auto", background: "#fff", borderRadius: "8px", boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}>
+    <div style={{ width: "100%", height: "100%" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
         <Title level={3} style={{ margin: 0 }}>
           ไฟล์ที่อัพโหลดแล้ว
