@@ -1,5 +1,5 @@
 // API Functions for handling file operations
-import { config } from '../config.js';
+import config from '../../config.js';
 
 // Fetch all files
 export const fetchFiles = async () => {
