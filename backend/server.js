@@ -108,18 +108,54 @@ app.post('/logs-remove-file', authenticateToken, async (req, res) => {
 app.post("/upload", authenticateToken, upload.single("file"), async (req, res) => {
   try {
     const { path, filename, mimetype } = req.file;
+    const fileSize = req.file.size; // Get file size from the uploaded file
+    
     const file = new ImageDetails({
       path,
       filename,
       mimetype,
       userId: req.user._id,
       username: req.user.username,
+      fileSize: fileSize, // Save the file size
     });
 
     await file.save();
-    res.json({ msg: "File uploaded successfully!", fileId: file._id });
+    res.json({ 
+      msg: "File uploaded successfully!", 
+      fileId: file._id,
+      fileSize: fileSize 
+    });
   } catch (error) {
     res.status(500).json({ error: "Unable to upload file" });
+  }
+});
+
+app.get("/user/storage", authenticateToken, async (req, res) => {
+  try {
+    // ใช้งาน .find() แทน .aggregate() เพื่อลดปัญหา
+    const files = await ImageDetails.find({ userId: req.user._id });
+    
+    // คำนวณขนาดรวมของไฟล์
+    let totalSize = 0;
+    files.forEach(file => {
+      if (file.fileSize) {
+        totalSize += file.fileSize;
+      }
+    });
+    
+    const totalFiles = files.length;
+    const sizeInGB = totalSize / 1073741824;
+    
+    res.json({ 
+      totalSize: totalSize,
+      totalSizeInGB: parseFloat(sizeInGB.toFixed(2)),
+      totalFiles: totalFiles,
+      storageLimit: 1, // เปลี่ยนเป็น 1 GB
+      storagePercentage: parseFloat(((sizeInGB / 1) * 100).toFixed(2))
+    });
+  } catch (error) {
+    console.error("Error calculating storage:", error);
+    res.status(500).json({ error: "Unable to retrieve storage information" });
   }
 });
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Modal, Upload, Button, message, Progress, Typography } from 'antd';
 import { 
   InboxOutlined, 
@@ -6,6 +6,7 @@ import {
   CloseOutlined,
   CheckCircleOutlined
 } from '@ant-design/icons';
+import { StorageContext } from '../context/StorageContext'; // We'll create this context
 
 const { Dragger } = Upload;
 const { Text } = Typography;
@@ -15,6 +16,7 @@ const UploadModal = ({ visible, onCancel }) => {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadLoading, setUploadLoading] = useState(false);
+  const { refreshStorage } = useContext(StorageContext); // Get the refresh function from context
 
   const handleUpload = async (options) => {
     const { file, onSuccess, onError, onProgress } = options;
@@ -26,6 +28,17 @@ const UploadModal = ({ visible, onCancel }) => {
     const token = localStorage.getItem("token");
     
     try {
+      // Simulate progress
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 99) {
+            clearInterval(progressInterval);
+            return 99;
+          }
+          return prev + 10;
+        });
+      }, 200);
+
       // อัพโหลดไฟล์จริง
       const response = await fetch("http://localhost:5000/upload", {
         method: "POST",
@@ -35,6 +48,7 @@ const UploadModal = ({ visible, onCancel }) => {
         },
       });
 
+      clearInterval(progressInterval);
       const result = await response.json();
       
       if (response.ok) {
@@ -44,14 +58,22 @@ const UploadModal = ({ visible, onCancel }) => {
           icon: <CheckCircleOutlined style={{ color: '#52c41a' }} />
         });
         const token = localStorage.getItem("token");
-        const response = await fetch(`http://localhost:5000/logs-upload`, {
+        await fetch(`http://localhost:5000/logs-upload`, {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${token}`, // Send token for authentication
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
           },
+          body: JSON.stringify({
+            message: `อัพโหลดไฟล์ ${file.name} (${formatFileSize(file.size)})`,
+            level: "info"
+          })
         });
         onSuccess(result, file);
         setUploadProgress(100); // ตั้งค่าสถานะว่าอัพโหลดเสร็จแล้ว
+        
+        // Refresh storage usage after successful upload
+        refreshStorage();
       } else {
         // อัพโหลดล้มเหลว
         message.error(result.error || "อัพโหลดไฟล์ล้มเหลว");
@@ -64,6 +86,14 @@ const UploadModal = ({ visible, onCancel }) => {
     } finally {
       setUploadLoading(false);
     }
+  };
+
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
   const props = {
@@ -83,7 +113,7 @@ const UploadModal = ({ visible, onCancel }) => {
       setFileList(newFileList);
       
       if (status === 'done') {
-        message.success(`${info.file.name} อัพโหลดสำเร็จ`);
+        message.success(`${info.file.name} (${formatFileSize(info.file.size)}) อัพโหลดสำเร็จ`);
       } else if (status === 'error') {
         message.error(`${info.file.name} อัพโหลดไม่สำเร็จ`);
       }
@@ -96,6 +126,15 @@ const UploadModal = ({ visible, onCancel }) => {
       showRemoveIcon: true,
       removeIcon: <CloseOutlined />,
     },
+    beforeUpload: (file) => {
+      // Check file size before upload (max 1GB per file)
+      const isLessThan1GB = file.size / 1024 / 1024 / 1024 < 1;
+      if (!isLessThan1GB) {
+        message.error(`${file.name} ขนาดไฟล์เกิน 1GB ไม่สามารถอัพโหลดได้`);
+        return Upload.LIST_IGNORE;
+      }
+      return true;
+    }
   };
 
   const handleOk = () => {
@@ -112,6 +151,7 @@ const UploadModal = ({ visible, onCancel }) => {
       setFileList([]);
       onCancel();
       message.success('อัพโหลดไฟล์ทั้งหมดเรียบร้อยแล้ว');
+      refreshStorage(); // Refresh storage data after upload
     }, 2000);
   };
 
@@ -142,11 +182,11 @@ const UploadModal = ({ visible, onCancel }) => {
         </p>
         <p className="ant-upload-text">คลิกหรือลากไฟล์มาที่นี่เพื่ออัพโหลด</p>
         <p className="ant-upload-hint">
-          รองรับไฟล์เดี่ยวหรือหลายไฟล์ ขนาดไฟล์สูงสุด 100MB ต่อไฟล์
+          รองรับไฟล์เดี่ยวหรือหลายไฟล์ ขนาดไฟล์สูงสุด 1GB ต่อไฟล์
         </p>
       </Dragger>
 
-      {fileList.length > 0 && uploading && (
+      {fileList.length > 0 && uploadLoading && (
         <div style={{ marginTop: 16 }}>
           <Text>กำลังอัพโหลด...</Text>
           <Progress percent={uploadProgress} status="active" />

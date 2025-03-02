@@ -14,6 +14,7 @@ import ProtectedRoute from "./component/ProtectedRoute"; // Import the new compo
 import reportWebVitals from "./reportWebVitals";
 import Upload from "./page/Upload";
 import { AuthProvider } from "./context/AuthContext";
+import { StorageProvider } from "./context/StorageContext"; // เพิ่ม import StorageProvider
 import Logs from "./page/logs";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -22,34 +23,36 @@ root.render(
   <React.StrictMode>
     <ConfigProvider locale={th_TH}>
       <AuthProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/logs" element={<Logs />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/usersetting" element={
-              <ProtectedRoute>
-                <UserSettingPage />
-              </ProtectedRoute>
-            } />
-             <Route path="/main" element={
-              <ProtectedRoute>
-                <App />
-              </ProtectedRoute>
-            } />
-            <Route path="/home" element={
-              <ProtectedRoute>
-                <MainPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/Upload" element={
-              <ProtectedRoute>
-                <Upload />
-              </ProtectedRoute>
-            } />
-            
-          </Routes>
-        </Router>
+        <StorageProvider> 
+          <Router>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/logs" element={<Logs />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/usersetting" element={
+                <ProtectedRoute>
+                  <UserSettingPage />
+                </ProtectedRoute>
+              } />
+               <Route path="/main" element={
+                <ProtectedRoute>
+                  <App />
+                </ProtectedRoute>
+              } />
+              <Route path="/home" element={
+                <ProtectedRoute>
+                  <MainPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/Upload" element={
+                <ProtectedRoute>
+                  <Upload />
+                </ProtectedRoute>
+              } />
+              
+            </Routes>
+          </Router>
+        </StorageProvider>
       </AuthProvider>
     </ConfigProvider>
   </React.StrictMode>

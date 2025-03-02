@@ -39,7 +39,12 @@ export const fetchFiles = async () => {
             method: "POST",
             headers: {
               Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json"
             },
+            body: JSON.stringify({
+              message: `ลบไฟล์ ${fileId}`,
+              level: "info"
+            })
           });
         } catch (logError) {
           console.error("Error logging file removal:", logError);
@@ -51,6 +56,28 @@ export const fetchFiles = async () => {
       }
     } catch (error) {
       console.error("Error in deleteFile:", error);
+      throw error;
+    }
+  };
+  
+  // Get storage usage information
+  export const getStorageInfo = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      
+      const response = await fetch("http://localhost:5000/user/storage", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch storage data');
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching storage info:", error);
       throw error;
     }
   };

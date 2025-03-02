@@ -10,7 +10,7 @@ import { isImageFile, getFileExtension, getFileCategory } from "./FileListCompon
 
 const { Title, Text } = Typography;
 
-function FileList() {
+function FileList({ onFileChange }) {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [previewVisible, setPreviewVisible] = useState(false);
@@ -34,6 +34,11 @@ function FileList() {
         console.log("Fetched files:", data);
         setFiles(Array.isArray(data) ? data : []);
         setLoading(false);
+        
+        // เรียกใช้ onFileChange หลังจากดึงข้อมูลไฟล์เสร็จ (ถ้ามี)
+        if (onFileChange) {
+          onFileChange();
+        }
       })
       .catch((err) => {
         console.error("Error fetching files:", err);
@@ -53,6 +58,25 @@ function FileList() {
           icon: <CheckCircleOutlined style={{ color: '#52c41a' }} />
         });
         setFiles((prevFiles) => prevFiles.filter((file) => file._id !== id));
+        
+        // เรียกใช้ onFileChange หลังจากลบไฟล์เสร็จ เพื่ออัปเดตข้อมูลพื้นที่จัดเก็บ
+        if (onFileChange) {
+          onFileChange();
+        }
+        
+        // บันทึกประวัติการลบไฟล์
+        const token = localStorage.getItem("token");
+        await fetch(`http://localhost:5000/logs-remove-file`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            message: "ลบไฟล์",
+            level: "info"
+          })
+        });
       } else {
         message.error(data.error || "ลบไฟล์ล้มเหลว");
       }
