@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
+import { config } from '../config.js';
 
 // Create the Storage Context
 export const StorageContext = createContext();
@@ -25,7 +26,7 @@ export const StorageProvider = ({ children }) => {
         return; // Don't attempt to fetch if not logged in
       }
 
-      const response = await fetch('http://localhost:5000/user/storage', {
+      const response = await fetch(`${config.serverUrlPrefix}/user/storage`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

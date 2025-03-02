@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await axios.post('http://localhost:5000/signout');
+      await axios.post(`${config.serverUrlPrefix}/signout`);
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
