@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { config } from '../config.js';
 
 export const AuthContext = createContext();
 
@@ -19,7 +20,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       try {
-        const response = await axios.get('http://localhost:5000/user', {
+        const response = await axios.get(`${config.serverUrlPrefix}/user`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -51,7 +52,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
-      const response = await axios.post('http://localhost:5000/login', credentials);
+      const response = await axios.post(`${config.serverUrlPrefix}/login`, credentials);
       
       if (response.data && response.data.status === "success" && response.data.token) {
         localStorage.setItem('token', response.data.token);

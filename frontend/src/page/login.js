@@ -4,6 +4,7 @@ import { LockOutlined, MailOutlined, UserOutlined} from "@ant-design/icons";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext"; // Update path if needed
+import { config } from '../config.js';
 
 const { useToken } = theme;
 const { useBreakpoint } = Grid;
@@ -28,7 +29,7 @@ const LoginPage = () => {
       if (isSignUp) {
         // Sign Up
         const { email, username, password } = values;
-        const res = await axios.post("http://localhost:5000/signup", { email, username, password });
+        const res = await axios.post(`${config.serverUrlPrefix}/signup`, { email, username, password });
         
         if (res.data && res.data.status === "success") {
           message.success("Sign up successful!");
