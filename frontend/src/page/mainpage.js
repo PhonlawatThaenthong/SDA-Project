@@ -5,10 +5,7 @@ import {
   UserOutlined, 
   DownOutlined,
   HomeOutlined,
-  StarOutlined,
-  DeleteOutlined,
   CloudOutlined,
-  PlusOutlined,
   SearchOutlined,
   WarningOutlined
 } from '@ant-design/icons';
@@ -30,7 +27,7 @@ const MainPage = () => {
   const [username, setUsername] = useState('');
 
   // Get storage data from context
-  const { storageData, loading, error, refreshStorage } = useContext(StorageContext);
+  const { storageData, error, refreshStorage } = useContext(StorageContext);
   
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -50,10 +47,6 @@ const MainPage = () => {
     setIsUploadModalVisible(false);
     // Refresh storage data after closing upload modal
     refreshStorage();
-  };
-  
-  const showUserProfile = () => {
-    setIsUserProfileVisible(true);
   };
   
   const handleUserProfileCancel = () => {

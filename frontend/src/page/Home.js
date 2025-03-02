@@ -1,17 +1,16 @@
 // src/page/Home.js
 import React, { useContext, useEffect } from 'react';
-import { Layout, Row, Col, Button, Typography, Card, message } from 'antd';
+import { Layout, Row, Col, Button, Typography, Card} from 'antd';
 import { useNavigate } from 'react-router-dom'; // Add this import
 import CustomHeader from '../component/Header';
 import CustomFooter from '../component/Footer';
 import '../component/home component/style.css';
 import { AuthContext } from '../context/AuthContext';
 
-const { Content } = Layout;
 const { Title, Paragraph } = Typography;
 
 const Home = () => {
-  const { isAuthenticated, user } = useContext(AuthContext);
+  const { isAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate(); // Add this hook
 
   // Add this effect to redirect authenticated users to /home

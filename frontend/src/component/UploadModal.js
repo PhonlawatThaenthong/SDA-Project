@@ -2,7 +2,6 @@ import React, { useState, useContext } from 'react';
 import { Modal, Upload, Button, message, Progress, Typography } from 'antd';
 import { 
   InboxOutlined, 
-  FileOutlined,
   CloseOutlined,
   CheckCircleOutlined
 } from '@ant-design/icons';
@@ -19,7 +18,7 @@ const UploadModal = ({ visible, onCancel }) => {
   const { refreshStorage } = useContext(StorageContext); // Get the refresh function from context
 
   const handleUpload = async (options) => {
-    const { file, onSuccess, onError, onProgress } = options;
+    const { file, onSuccess, onError } = options;
     
     const formData = new FormData();
     formData.append("file", file);
