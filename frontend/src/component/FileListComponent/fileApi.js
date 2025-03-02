@@ -1,11 +1,12 @@
 // API Functions for handling file operations
+import { config } from '../config.js';
 
 // Fetch all files
 export const fetchFiles = async () => {
     try {
       const token = localStorage.getItem("token");
       
-      const response = await fetch("http://localhost:5000/files", {
+      const response = await fetch(`${config.serverUrlPrefix}/files`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -23,7 +24,7 @@ export const fetchFiles = async () => {
     try {
       const token = localStorage.getItem("token");
       
-      const response = await fetch(`http://localhost:5000/file/${fileId}`, {
+      const response = await fetch(`${config.serverUrlPrefix}/file/${fileId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -35,7 +36,7 @@ export const fetchFiles = async () => {
       // Log file removal if successful
       if (response.ok) {
         try {
-          await fetch(`http://localhost:5000/logs-remove-file`, {
+          await fetch(`${config.serverUrlPrefix}/logs-remove-file`, {
             method: "POST",
             headers: {
               Authorization: `Bearer ${token}`,
@@ -65,7 +66,7 @@ export const fetchFiles = async () => {
     try {
       const token = localStorage.getItem("token");
       
-      const response = await fetch("http://localhost:5000/user/storage", {
+      const response = await fetch(`${config.serverUrlPrefix}/user/storage`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -9,6 +9,7 @@ import {
   getFileExtension,
   formatFileSize 
 } from './fileUtils';
+import { config } from '../config.js';
 
 const { Text } = Typography;
 
@@ -42,7 +43,7 @@ const FileGridView = ({ files, onPreview, onDelete }) => {
                 >
                   <img
                     alt={file.filename}
-                    src={`http://localhost:5000/file/${file._id}`}
+                    src={`${config.serverUrlPrefix}/file/${file._id}`}
                     style={{ 
                       maxHeight: "100%", 
                       maxWidth: "100%", 
