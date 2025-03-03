@@ -226,20 +226,6 @@ const MainPage = () => {
               onChange={e => setSearchText(e.target.value)}
             />
             
-            <Tooltip title="ดูประวัติการใช้งานระบบ">
-              <Button 
-                type="primary" 
-                icon={<DashboardOutlined />} 
-                onClick={navigateToLogs}
-                style={{ 
-                  marginLeft: '16px',
-                  background: 'linear-gradient(90deg, #722ed1 0%, #eb2f96 100%)',
-                  border: 'none'
-                }}
-              >
-                Audit Logs
-              </Button>
-            </Tooltip>
           </div>
           
           <Space size="middle">
