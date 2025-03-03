@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { 
   Card, 
@@ -35,7 +36,10 @@ import {
   CloudUploadOutlined,
   BarChartOutlined,
   PieChartOutlined,
-  ReloadOutlined
+  ReloadOutlined,
+  HomeOutlined,
+  ArrowLeftOutlined,
+  FolderOutlined
 } from '@ant-design/icons';
 import { config } from '../config.js';
 
@@ -51,6 +55,7 @@ function Logs() {
   const [storageData, setStorageData] = useState([]);
   const [storageLoading, setStorageLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('1');
+  const navigate = useNavigate();
 
   useEffect(() => {
     // ดึงข้อมูลผู้ใช้จาก localStorage (เหมือนใน mainpage.js)
@@ -124,6 +129,11 @@ function Logs() {
         message.error('ไม่สามารถโหลดข้อมูลพื้นที่จัดเก็บได้');
         setStorageLoading(false);
       });
+  };
+
+  // ฟังก์ชันนำทางกลับไปยังหน้าหลัก
+  const navigateToMainPage = () => {
+    navigate('/home');
   };
 
   // ฟังก์ชันจัดการออกจากระบบ เหมือนใน mainpage.js
@@ -619,7 +629,20 @@ function Logs() {
         justifyContent: 'space-between',
         boxShadow: '0 1px 4px rgba(0, 0, 0, 0.05)'
       }}>
-        <div>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Tooltip title="กลับไปยังหน้าหลัก">
+            <Button 
+              type="primary" 
+              shape="circle" 
+              icon={<ArrowLeftOutlined />} 
+              onClick={navigateToMainPage}
+              style={{ 
+                marginRight: '16px',
+                background: 'linear-gradient(90deg, #1890ff 0%, #36cfc9 100%)',
+                border: 'none'
+              }} 
+            />
+          </Tooltip>
           <Title level={4} style={{ margin: 0, color: '#1890ff' }}>
             {activeTab === '1' ? 'Audit Log Monitor' : 'Storage Usage Monitor'}
           </Title>

@@ -8,8 +8,11 @@ import {
   CloudOutlined,
   SearchOutlined,
   WarningOutlined,
-  RedoOutlined
+  RedoOutlined,
+  AreaChartOutlined,
+  DashboardOutlined
 } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import FileList from '../component/FileList';
 import UploadModal from '../component/UploadModal';
 import UserProfileModal from '../component/UserProfileModal';
@@ -27,6 +30,7 @@ const MainPage = () => {
   const [searchText, setSearchText] = useState('');
   const [currentPage, setCurrentPage] = useState('files');
   const [username, setUsername] = useState('');
+  const navigate = useNavigate();
 
   // Get storage data from context
   const { storageData, error, refreshStorage } = useContext(StorageContext);
@@ -92,6 +96,11 @@ const MainPage = () => {
       </Menu.Item>
     </Menu>
   );
+
+  // ฟังก์ชันนำทางไปยังหน้า Logs
+  const navigateToLogs = () => {
+    navigate('/logs');
+  };
 
   // เซกชั่นแสดงข้อมูลพื้นที่เก็บข้อมูล
   const StorageSection = () => {
@@ -189,6 +198,9 @@ const MainPage = () => {
           <Menu.Item key="files" icon={<HomeOutlined />}>
             ไฟล์ของฉัน
           </Menu.Item>
+          <Menu.Item key="logs" icon={<AreaChartOutlined />} onClick={navigateToLogs}>
+            ประวัติการใช้งาน
+          </Menu.Item>
         </Menu>
         
         {!collapsed && <StorageSection />}
@@ -203,15 +215,32 @@ const MainPage = () => {
           justifyContent: 'space-between',
           boxShadow: '0 1px 4px rgba(0, 0, 0, 0.05)'
         }}>
-          <Search
-            placeholder="ค้นหาไฟล์หรือโฟลเดอร์"
-            allowClear
-            enterButton={<SearchOutlined />}
-            size="middle"
-            style={{ width: '400px' }}
-            value={searchText}
-            onChange={e => setSearchText(e.target.value)}
-          />
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <Search
+              placeholder="ค้นหาไฟล์หรือโฟลเดอร์"
+              allowClear
+              enterButton={<SearchOutlined />}
+              size="middle"
+              style={{ width: '400px' }}
+              value={searchText}
+              onChange={e => setSearchText(e.target.value)}
+            />
+            
+            <Tooltip title="ดูประวัติการใช้งานระบบ">
+              <Button 
+                type="primary" 
+                icon={<DashboardOutlined />} 
+                onClick={navigateToLogs}
+                style={{ 
+                  marginLeft: '16px',
+                  background: 'linear-gradient(90deg, #722ed1 0%, #eb2f96 100%)',
+                  border: 'none'
+                }}
+              >
+                Audit Logs
+              </Button>
+            </Tooltip>
+          </div>
           
           <Space size="middle">
             <Button 
