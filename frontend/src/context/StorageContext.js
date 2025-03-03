@@ -13,7 +13,7 @@ export const StorageProvider = ({ children }) => {
     storageLimit: 1, 
     storagePercentage: 0
   });
-  const [loading, setLoading] = useState(false); // เปลี่ยนเป็น false เพื่อไม่แสดงสถานะโหลดเริ่มต้น
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   // Function to fetch storage data
@@ -53,10 +53,10 @@ export const StorageProvider = ({ children }) => {
     }
   };
 
-  // Initial fetch on component mount
-  useEffect(() => {
-    fetchStorageData();
-  }, []);
+  // ลบ useEffect ที่เรียก fetchStorageData เมื่อโหลดคอมโพเนนต์
+  // useEffect(() => {
+  //   fetchStorageData();
+  // }, []);
 
   // Format file size helper function
   const formatFileSize = (bytes) => {

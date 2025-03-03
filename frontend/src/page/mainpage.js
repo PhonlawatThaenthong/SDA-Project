@@ -7,7 +7,8 @@ import {
   HomeOutlined,
   CloudOutlined,
   SearchOutlined,
-  WarningOutlined
+  WarningOutlined,
+  RedoOutlined
 } from '@ant-design/icons';
 import FileList from '../component/FileList';
 import UploadModal from '../component/UploadModal';
@@ -37,7 +38,7 @@ const MainPage = () => {
     }
     
     // Refresh storage data when the component mounts
-    refreshStorage();
+    // refreshStorage();  // <-- ลบบรรทัดนี้
   }, [refreshStorage]);
 
   const showUploadModal = () => {
@@ -99,8 +100,6 @@ const MainPage = () => {
       console.error("Storage error:", error);
     }
     
-    // ถ้ากำลังโหลดข้อมูล แสดงข้อมูลที่มีอยู่ ไม่แสดงข้อความกำลังโหลด
-    
     // Convert storage data to display format
     const storageUsed = storageData.storagePercentage || 0;
     const isStorageNearlyFull = storageUsed > 80;
@@ -112,11 +111,13 @@ const MainPage = () => {
         <Space direction="vertical" style={{ width: '100%' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Text strong>พื้นที่เก็บข้อมูล</Text>
-            {isStorageNearlyFull && (
-              <Tooltip title="พื้นที่เก็บข้อมูลเกือบเต็มแล้ว">
-                <WarningOutlined style={{ color: '#faad14' }} />
-              </Tooltip>
-            )}
+            <div>
+              {isStorageNearlyFull && (
+                <Tooltip title="พื้นที่เก็บข้อมูลเกือบเต็มแล้ว">
+                  <WarningOutlined style={{ color: '#faad14' }} />
+                </Tooltip>
+              )}
+            </div>
           </div>
           
           <Progress 

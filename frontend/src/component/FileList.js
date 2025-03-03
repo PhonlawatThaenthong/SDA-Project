@@ -25,7 +25,18 @@ function FileList({ onFileChange }) {
 
   // Fetch files from the backend
   useEffect(() => {
-    fetchFiles();
+    // ทำการเรียกข้อมูลเฉพาะครั้งแรก ไม่รวมถึงอัปเดต storage
+    apiFetchFiles()
+      .then((data) => {
+        console.log("Initial file fetch:", data);
+        setFiles(Array.isArray(data) ? data : []);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching files:", err);
+        message.error("ไม่สามารถดึงข้อมูลไฟล์ได้");
+        setLoading(false);
+      });
   }, []);
 
   const fetchFiles = () => {
@@ -189,7 +200,7 @@ function FileList({ onFileChange }) {
       />
 
       {loading ? (
-        <div style={{ textAlign: "center", padding: "60px 0" }}>
+        <div style={{ textAlign: "centernbod", padding: "60px 0" }}>
           <Spin size="large" />
           <div style={{ marginTop: "16px", color: "#1890ff" }}>กำลังโหลดไฟล์...</div>
         </div>
