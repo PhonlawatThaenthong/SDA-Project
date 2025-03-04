@@ -11,6 +11,25 @@ import { config } from '../config.js';
 
 const { Title, Text } = Typography;
 
+// Modern theme colors
+const themeColors = {
+  primary: '#4361ee', // Modern blue
+  secondary: '#3a0ca3', // Deep purple
+  accent: '#4cc9f0', // Bright cyan
+  gradient: 'linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%)',
+  gradientAccent: 'linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%)',
+  siderBg: '#f8f9fa', // Light gray background
+  headerBg: '#FFFFFF',
+  contentBg: '#f8f9fa',
+  warningColor: '#ff9800', // Orange
+  dangerColor: '#f44336', // Red
+  successColor: '#4caf50', // Green
+  textPrimary: '#212529',
+  boxShadow: '0 4px 12px rgba(67, 97, 238, 0.15)',
+  cardPrimary: '#ffffff',
+  borderColor: 'rgba(67, 97, 238, 0.1)'
+};
+
 function FileList({ onFileChange }) {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -67,7 +86,7 @@ function FileList({ onFileChange }) {
       if (data.success) {
         message.success({
           content: "ลบไฟล์สำเร็จ",
-          icon: <CheckCircleOutlined style={{ color: '#52c41a' }} />
+          icon: <CheckCircleOutlined style={{ color: themeColors.successColor }} />
         });
         setFiles((prevFiles) => prevFiles.filter((file) => file._id !== id));
         
@@ -163,10 +182,32 @@ function FileList({ onFileChange }) {
   const filteredFiles = getFilteredFiles();
 
   return (
-    <div style={{ width: "100%", height: "100%" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
-        <Title level={3} style={{ margin: 0 }}>
-          ไฟล์ที่อัพโหลดแล้ว
+    <div style={{ width: "100%", height: "100%", position: "relative" }}>
+      <div style={{ 
+        display: "flex", 
+        alignItems: "center", 
+        justifyContent: "space-between", 
+        marginBottom: "16px",
+        position: "relative",
+        zIndex: 1
+      }}>
+        <Title level={3} style={{ 
+          margin: 0, 
+          color: themeColors.textPrimary,
+          position: "relative",
+          display: "flex",
+          alignItems: "center"
+        }}>
+          <span style={{ 
+            background: themeColors.gradient,
+            backgroundClip: "text",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            fontWeight: 600,
+            display: "inline-block"
+          }}>
+            ไฟล์ที่อัพโหลดแล้ว
+          </span>
         </Title>
         
         <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
@@ -174,20 +215,36 @@ function FileList({ onFileChange }) {
             type="default"
             icon={<RedoOutlined />}
             onClick={fetchFiles}
-            size="small"
-            style={{ borderRadius: '4px' }}
+            size="middle"
+            style={{ 
+              borderRadius: '8px',
+              border: '1px solid rgba(67, 97, 238, 0.1)',
+              background: 'rgba(67, 97, 238, 0.03)',
+              color: themeColors.textPrimary
+            }}
           >
             Refresh
           </Button>
 
-          <Text type="secondary" style={{ marginLeft: "8px" }}>
-            <InfoCircleOutlined style={{ marginRight: "4px" }} />
-            {files.length} ไฟล์
+          <Text type="secondary" style={{ marginLeft: "12px", display: "flex", alignItems: "center" }}>
+            <InfoCircleOutlined style={{ marginRight: "6px", color: themeColors.primary }} />
+            <span style={{ 
+              background: themeColors.accent,
+              backgroundClip: "text",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              fontWeight: 500
+            }}>
+              {files.length} ไฟล์
+            </span>
           </Text>
         </div>
       </div>
       
-      <Divider style={{ margin: "16px 0 24px" }} />
+      <Divider style={{ 
+        margin: "16px 0 24px", 
+        borderColor: "rgba(67, 97, 238, 0.08)"
+      }} />
 
       {/* Filter controls component */}
       <FileFilterControls 
@@ -197,35 +254,60 @@ function FileList({ onFileChange }) {
         setSortBy={setSortBy}
         viewMode={viewMode}
         setViewMode={setViewMode}
+        themeColors={themeColors}
       />
 
       {loading ? (
-        <div style={{ textAlign: "centernbod", padding: "60px 0" }}>
+        <div style={{ 
+          display: "flex", 
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center", 
+          padding: "60px 0",
+          gap: "16px"
+        }}>
           <Spin size="large" />
-          <div style={{ marginTop: "16px", color: "#1890ff" }}>กำลังโหลดไฟล์...</div>
+          <div style={{ 
+            marginTop: "16px", 
+            color: themeColors.primary, 
+            fontWeight: 500
+          }}>
+            กำลังโหลดไฟล์...
+          </div>
         </div>
       ) : filteredFiles.length === 0 ? (
-        <Empty 
-          image={Empty.PRESENTED_IMAGE_SIMPLE} 
-          description={
-            <div>
-              <p>ไม่พบไฟล์ที่ตรงตามเงื่อนไข</p>
-              <Text type="secondary">ลองเปลี่ยนตัวกรองหรืออัปโหลดไฟล์ใหม่</Text>
-            </div>
-          } 
-          style={{ padding: "60px 0" }} 
-        />
+        <div style={{
+          padding: "60px 0",
+          textAlign: "center",
+          background: "rgba(67, 97, 238, 0.02)",
+          borderRadius: "16px",
+          border: "1px dashed rgba(67, 97, 238, 0.1)"
+        }}>
+          <Empty 
+            image={Empty.PRESENTED_IMAGE_SIMPLE} 
+            description={
+              <div>
+                <p style={{ color: themeColors.textPrimary, fontWeight: 500, marginBottom: "8px" }}>
+                  ไม่พบไฟล์ที่ตรงตามเงื่อนไข
+                </p>
+                <Text type="secondary">ลองเปลี่ยนตัวกรองหรืออัปโหลดไฟล์ใหม่</Text>
+              </div>
+            }
+          />
+        </div>
       ) : viewMode === 'grid' ? (
         <FileGridView
           files={filteredFiles}
           onPreview={handlePreview}
           onDelete={handleDelete}
+          themeColors={themeColors}
         />
       ) : (
         <FileTableView
           files={filteredFiles}
           onPreview={handlePreview}
           onDelete={handleDelete}
+          themeColors={themeColors}
         />
       )}
 
@@ -235,6 +317,7 @@ function FileList({ onFileChange }) {
         title={previewTitle}
         imageUrl={previewImage}
         onClose={() => setPreviewVisible(false)}
+        themeColors={themeColors}
       />
     </div>
   );

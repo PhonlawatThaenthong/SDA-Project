@@ -20,6 +20,23 @@ const { Header, Sider, Content } = Layout;
 const { Text } = Typography;
 const { Search } = Input;
 
+// Modern theme colors
+const themeColors = {
+  primary: '#4361ee', // Modern blue
+  secondary: '#3a0ca3', // Deep purple
+  accent: '#4cc9f0', // Bright cyan
+  gradient: 'linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%)',
+  gradientAccent: 'linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%)',
+  siderBg: '#f8f9fa', // Light gray background
+  headerBg: '#FFFFFF',
+  contentBg: '#f8f9fa',
+  warningColor: '#ff9800', // Orange
+  dangerColor: '#f44336', // Red
+  successColor: '#4caf50', // Green
+  textPrimary: '#212529',
+  boxShadow: '0 4px 12px rgba(67, 97, 238, 0.15)'
+};
+
 const MainPage = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [isUploadModalVisible, setIsUploadModalVisible] = useState(false);
@@ -72,12 +89,17 @@ const MainPage = () => {
   };
   
   const userMenu = (
-    <Menu>
-      <Menu.Item key="settings">
+    <Menu style={{ 
+      borderRadius: '12px', 
+      boxShadow: themeColors.boxShadow,
+      padding: '8px',
+      border: '1px solid rgba(67, 97, 238, 0.1)'
+    }}>
+      <Menu.Item key="settings" style={{ borderRadius: '8px' }}>
         ตั้งค่า
       </Menu.Item>
       <Menu.Divider />
-      <Menu.Item key="logout" onClick={handleLogout}>
+      <Menu.Item key="logout" onClick={handleLogout} style={{ borderRadius: '8px' }}>
         ออกจากระบบ
       </Menu.Item>
     </Menu>
@@ -99,15 +121,30 @@ const MainPage = () => {
     const usedGB = (storageData.totalSizeInGB || 0).toFixed(2);
     const totalGB = storageData.storageLimit || 1;
     
+    const getProgressColor = (percentage) => {
+      if (percentage > 90) return themeColors.dangerColor;
+      if (percentage > 70) return themeColors.warningColor;
+      return themeColors.primary;
+    };
+    
     return (
-      <div style={{ padding: '16px', borderRadius: '8px', background: '#f5f5f5', marginTop: '16px' }}>
+      <div style={{ 
+        padding: '20px', 
+        borderRadius: '16px', 
+        background: '#ffffff', 
+        marginTop: '20px',
+        boxShadow: '0 2px 8px rgba(67, 97, 238, 0.1)',
+        border: '1px solid rgba(67, 97, 238, 0.05)',
+        backgroundImage: 'radial-gradient(rgba(67, 97, 238, 0.03) 1px, transparent 1px)',
+        backgroundSize: '20px 20px',
+      }}>
         <Space direction="vertical" style={{ width: '100%' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Text strong>พื้นที่เก็บข้อมูล</Text>
+            <Text strong style={{ fontSize: '14px', color: themeColors.textPrimary }}>พื้นที่เก็บข้อมูล</Text>
             <div>
               {isStorageNearlyFull && (
                 <Tooltip title="พื้นที่เก็บข้อมูลเกือบเต็มแล้ว">
-                  <WarningOutlined style={{ color: '#faad14' }} />
+                  <WarningOutlined style={{ color: themeColors.warningColor }} />
                 </Tooltip>
               )}
             </div>
@@ -118,9 +155,11 @@ const MainPage = () => {
             size="small" 
             status={storageUsed >= 100 ? "exception" : "normal"}
             strokeColor={{
-              '0%': '#108ee9',
-              '100%': storageUsed >= 90 ? '#ff4d4f' : '#87d068',
-            }} 
+              '0%': themeColors.primary,
+              '100%': getProgressColor(storageUsed),
+            }}
+            trailColor="rgba(67, 97, 238, 0.1)"
+            style={{ height: '8px' }}
           />
           
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -147,52 +186,110 @@ const MainPage = () => {
   };
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
+    <Layout style={{ minHeight: '100vh', background: themeColors.contentBg }}>
       <Sider 
         collapsible 
         collapsed={collapsed} 
         onCollapse={setCollapsed}
         theme="light"
-        style={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.09)' }}
+        style={{ 
+          boxShadow: themeColors.boxShadow, 
+          background: themeColors.siderBg,
+          borderRight: 'none',
+          position: 'relative',
+          zIndex: 10,
+          backgroundImage: 'linear-gradient(180deg, rgba(67, 97, 238, 0.03) 0%, rgba(67, 97, 238, 0.01) 100%)',
+        }}
+        width={240}
       >
         <div style={{ 
           height: 48, 
-          margin: '16px 16px', 
-          background: 'linear-gradient(90deg, #1890ff 0%, #36cfc9 100%)', 
-          borderRadius: 8,
+          margin: '24px 16px', 
+          background: themeColors.gradient, 
+          borderRadius: 16,
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center'
+          justifyContent: 'center',
+          boxShadow: '0 4px 15px rgba(67, 97, 238, 0.3)',
+          overflow: 'hidden',
+          position: 'relative',
         }}>
-          <CloudOutlined style={{ fontSize: '24px', color: 'white' }} />
-          {!collapsed && <span style={{ color: 'white', marginLeft: '8px', fontWeight: 'bold' }}>TH Cloud</span>}
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundImage: 'radial-gradient(circle at top right, rgba(76, 201, 240, 0.3), transparent 70%), radial-gradient(circle at bottom left, rgba(58, 12, 163, 0.3), transparent 70%)',
+            zIndex: 1
+          }}></div>
+          <CloudOutlined style={{ fontSize: '24px', color: 'white', zIndex: 2 }} />
+          {!collapsed && <span style={{ 
+            color: 'white', 
+            marginLeft: '8px', 
+            fontWeight: 'bold', 
+            letterSpacing: '0.5px',
+            fontFamily: "'Kanit', sans-serif",
+            zIndex: 2
+          }}>TH Cloud</span>}
         </div>
         
         <Menu 
-          theme="light" 
-          selectedKeys={[currentPage]} 
-          mode="inline"
-          onClick={handleMenuSelect}
-        >
-          <Menu.Item key="files" icon={<HomeOutlined />}>
-            ไฟล์ของฉัน
-          </Menu.Item>
-          <Menu.Item key="logs" icon={<AreaChartOutlined />} onClick={navigateToLogs}>
-            ประวัติการใช้งาน
-          </Menu.Item>
-        </Menu>
+  theme="light" 
+  selectedKeys={[currentPage]} 
+  mode="inline"
+  onClick={handleMenuSelect}
+  style={{ 
+    background: 'transparent', 
+    borderRight: 'none',
+    fontFamily: "'Kanit', sans-serif"
+  }}
+>
+  <Menu.Item 
+    key="files" 
+    icon={<HomeOutlined style={{ color: currentPage === 'files' ? themeColors.primary : undefined }} />}
+    style={{ 
+      margin: '4px 8px',  // ลดค่า margin ลง
+      borderRadius: '8px', // ลดความโค้ง
+      color: currentPage === 'files' ? themeColors.primary : undefined,
+      fontWeight: currentPage === 'files' ? 500 : 400,
+      transition: 'all 0.3s ease'
+    }}
+  >
+    ไฟล์ของฉัน
+  </Menu.Item>
+  <Menu.Item 
+    key="logs" 
+    icon={<AreaChartOutlined style={{ color: currentPage === 'logs' ? themeColors.primary : undefined }} />} 
+    onClick={navigateToLogs}
+    style={{ 
+      margin: '4px 8px',  // ลดค่า margin ลง
+      borderRadius: '8px', // ลดความโค้ง
+      color: currentPage === 'logs' ? themeColors.primary : undefined,
+      fontWeight: currentPage === 'logs' ? 500 : 400,
+      transition: 'all 0.3s ease'
+    }}
+  >
+    ประวัติการใช้งาน
+  </Menu.Item>
+</Menu>
         
         {!collapsed && <StorageSection />}
       </Sider>
       
-      <Layout>
+      <Layout style={{ background: themeColors.contentBg }}>
         <Header style={{ 
-          background: '#fff', 
+          background: themeColors.headerBg, 
           padding: '0 24px', 
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'space-between',
-          boxShadow: '0 1px 4px rgba(0, 0, 0, 0.05)'
+          boxShadow: '0 1px 8px rgba(67, 97, 238, 0.1)',
+          height: '64px',
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+          borderBottom: '1px solid rgba(67, 97, 238, 0.05)'
         }}>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <Search
@@ -200,7 +297,10 @@ const MainPage = () => {
               allowClear
               enterButton={<SearchOutlined />}
               size="middle"
-              style={{ width: '400px' }}
+              style={{ 
+                width: '400px',
+                borderRadius: '12px'
+              }}
               value={searchText}
               onChange={e => setSearchText(e.target.value)}
             />
@@ -212,39 +312,97 @@ const MainPage = () => {
               icon={<UploadOutlined />} 
               onClick={showUploadModal}
               style={{ 
-                background: 'linear-gradient(90deg, #1890ff 0%, #36cfc9 100%)',
-                border: 'none'
+                background: themeColors.gradient,
+                border: 'none',
+                borderRadius: '12px',
+                boxShadow: '0 4px 10px rgba(67, 97, 238, 0.2)',
+                height: '40px',
+                position: 'relative',
+                overflow: 'hidden',
               }}
               disabled={storageData.storagePercentage >= 100}
               title={storageData.storagePercentage >= 100 ? "พื้นที่เก็บข้อมูลเต็มแล้ว" : "อัพโหลดไฟล์"}
             >
-              อัพโหลด
+              <span style={{ 
+                position: 'relative', 
+                zIndex: 2,
+                padding: '0 4px'
+              }}>อัพโหลด</span>
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 50%, rgba(255,255,255,0) 100%)',
+                zIndex: 1
+              }}></div>
             </Button>
             
             <Dropdown overlay={userMenu} trigger={['click']}>
-              <Button type="text" style={{ height: '40px' }}>
+              <Button 
+                type="text" 
+                style={{ 
+                  height: '40px',
+                  borderRadius: '12px',
+                  padding: '4px 12px',
+                  background: 'rgba(67, 97, 238, 0.05)',
+                  transition: 'all 0.3s ease',
+                  border: '1px solid rgba(67, 97, 238, 0.1)'
+                }}
+              >
                 <Space>
                   <Avatar 
                     icon={<UserOutlined />} 
-                    style={{ backgroundColor: '#1890ff' }}
+                    style={{ 
+                      backgroundColor: themeColors.primary,
+                      boxShadow: '0 2px 6px rgba(67, 97, 238, 0.3)'
+                    }}
                   />
-                  {!collapsed && <span>{username || 'ผู้ใช้'}</span>}
-                  <DownOutlined />
+                  <span style={{ color: themeColors.textPrimary, fontFamily: "'Kanit', sans-serif" }}>
+                    {username || 'ผู้ใช้'}
+                  </span>
+                  <DownOutlined style={{ fontSize: '12px' }} />
                 </Space>
               </Button>
             </Dropdown>
           </Space>
         </Header>
         
-        <Content style={{ margin: '16px' }}>
+        <Content style={{ margin: '24px', fontFamily: "'Kanit', sans-serif" }}>
           <div style={{ 
             padding: 24, 
             background: '#fff', 
             minHeight: 360,
-            borderRadius: '8px',
-            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)'
+            borderRadius: '16px',
+            boxShadow: '0 4px 20px rgba(67, 97, 238, 0.1)',
+            border: '1px solid rgba(67, 97, 238, 0.05)',
+            backgroundImage: 'radial-gradient(rgba(67, 97, 238, 0.02) 1px, transparent 1px)',
+            backgroundSize: '20px 20px',
+            position: 'relative',
+            overflow: 'hidden'
           }}>
-            {renderContent()}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              width: '200px',
+              height: '200px',
+              background: 'radial-gradient(circle at top right, rgba(67, 97, 238, 0.05), transparent 70%)',
+              zIndex: 0
+            }}></div>
+            <div style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              width: '200px',
+              height: '200px',
+              background: 'radial-gradient(circle at bottom left, rgba(76, 201, 240, 0.05), transparent 70%)',
+              zIndex: 0
+            }}></div>
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              {renderContent()}
+            </div>
           </div>
         </Content>
       </Layout>
