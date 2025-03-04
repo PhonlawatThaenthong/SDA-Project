@@ -8,14 +8,11 @@ import {
   CloudOutlined,
   SearchOutlined,
   WarningOutlined,
-  RedoOutlined,
-  AreaChartOutlined,
-  DashboardOutlined
+  AreaChartOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import FileList from '../component/FileList';
 import UploadModal from '../component/UploadModal';
-import UserProfileModal from '../component/UserProfileModal';
 import { StorageContext } from '../context/StorageContext';
 import { config } from '../config.js';
 
@@ -26,7 +23,6 @@ const { Search } = Input;
 const MainPage = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [isUploadModalVisible, setIsUploadModalVisible] = useState(false);
-  const [isUserProfileVisible, setIsUserProfileVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [currentPage, setCurrentPage] = useState('files');
   const [username, setUsername] = useState('');
@@ -40,10 +36,7 @@ const MainPage = () => {
     if (user && user.username) {
       setUsername(user.username);
     }
-    
-    // Refresh storage data when the component mounts
-    // refreshStorage();  // <-- ลบบรรทัดนี้
-  }, [refreshStorage]);
+  }, []);
 
   const showUploadModal = () => {
     setIsUploadModalVisible(true);
@@ -53,10 +46,6 @@ const MainPage = () => {
     setIsUploadModalVisible(false);
     // Refresh storage data after closing upload modal
     refreshStorage();
-  };
-  
-  const handleUserProfileCancel = () => {
-    setIsUserProfileVisible(false);
   };
 
   const handleLogout = async () => {
@@ -78,10 +67,7 @@ const MainPage = () => {
       console.error("Error logging logout:", error);
     }
     
-    // ล้างข้อมูลทั้งหมดจาก localStorage
     localStorage.clear();
-
-    // รีเฟรชหน้า
     window.location.reload();
   };
   
@@ -104,16 +90,14 @@ const MainPage = () => {
 
   // เซกชั่นแสดงข้อมูลพื้นที่เก็บข้อมูล
   const StorageSection = () => {
-    // ถ้ามี error ให้แสดงค่าเริ่มต้น ไม่แสดงข้อความ error
     if (error) {
       console.error("Storage error:", error);
     }
     
-    // Convert storage data to display format
     const storageUsed = storageData.storagePercentage || 0;
     const isStorageNearlyFull = storageUsed > 80;
     const usedGB = (storageData.totalSizeInGB || 0).toFixed(2);
-    const totalGB = storageData.storageLimit || 1; // ใช้ค่าเริ่มต้น 1GB
+    const totalGB = storageData.storageLimit || 1;
     
     return (
       <div style={{ padding: '16px', borderRadius: '8px', background: '#f5f5f5', marginTop: '16px' }}>
@@ -154,12 +138,7 @@ const MainPage = () => {
 
   // แสดงคอมโพเนนต์ตามหน้าที่เลือก
   const renderContent = () => {
-    switch(currentPage) {
-      case 'files':
-        return <FileList onFileChange={refreshStorage} />;
-      default:
-        return <FileList onFileChange={refreshStorage} />;
-    }
+    return <FileList onFileChange={refreshStorage} />;
   };
 
   // ฟังก์ชันจัดการการเปลี่ยนหน้า
@@ -225,7 +204,6 @@ const MainPage = () => {
               value={searchText}
               onChange={e => setSearchText(e.target.value)}
             />
-            
           </div>
           
           <Space size="middle">
@@ -237,7 +215,6 @@ const MainPage = () => {
                 background: 'linear-gradient(90deg, #1890ff 0%, #36cfc9 100%)',
                 border: 'none'
               }}
-              // Disable upload button if storage is full
               disabled={storageData.storagePercentage >= 100}
               title={storageData.storagePercentage >= 100 ? "พื้นที่เก็บข้อมูลเต็มแล้ว" : "อัพโหลดไฟล์"}
             >
@@ -275,11 +252,6 @@ const MainPage = () => {
       <UploadModal 
         visible={isUploadModalVisible} 
         onCancel={handleUploadCancel} 
-      />
-      
-      <UserProfileModal 
-        visible={isUserProfileVisible}
-        onCancel={handleUserProfileCancel}
       />
     </Layout>
   );
