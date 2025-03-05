@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { message, Spin, Empty, Typography, Divider, Button } from "antd";
+import { message, Spin, Empty, Typography, Divider, Button, Grid } from "antd";
 import { InfoCircleOutlined, RedoOutlined, CheckCircleOutlined } from "@ant-design/icons";
 import FileFilterControls from "./FileListComponent/FileFilterControls";
 import FilePreviewModal from "./FileListComponent/FilePreviewModal";
@@ -10,6 +10,7 @@ import { isImageFile, getFileExtension, getFileCategory } from "./FileListCompon
 import { config } from '../config.js';
 
 const { Title, Text } = Typography;
+const { useBreakpoint } = Grid;
 
 // Modern theme colors
 const themeColors = {
@@ -41,6 +42,18 @@ function FileList({ onFileChange }) {
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
   const [filterType, setFilterType] = useState('all');
   const [sortBy, setSortBy] = useState('name'); // 'name', 'date', or 'size'
+  
+  // Get breakpoints
+  const screens = useBreakpoint();
+  const isMobile = !screens.md; // md is 768px in Ant Design
+  const isTablet = screens.md && !screens.lg; // between 768px and 992px
+
+  // Set default view mode based on screen size
+  useEffect(() => {
+    if (isMobile) {
+      setViewMode('grid'); // mobile devices default to grid view as it's more touch-friendly
+    }
+  }, [isMobile]);
 
   // Fetch files from the backend
   useEffect(() => {
@@ -182,17 +195,27 @@ function FileList({ onFileChange }) {
   const filteredFiles = getFilteredFiles();
 
   return (
-    <div style={{ width: "100%", height: "100%", position: "relative" }}>
+    <div style={{ 
+      width: "100%", 
+      height: "100%", 
+      position: "relative",
+      padding: isMobile ? 0 : undefined,
+      overflow: "hidden",
+      maxWidth: "100%",
+      boxSizing: "border-box" 
+    }} className="file-list-container">
       <div style={{ 
         display: "flex", 
-        alignItems: "center", 
+        flexDirection: isMobile ? "column" : "row",
+        alignItems: isMobile ? "flex-start" : "center", 
         justifyContent: "space-between", 
-        marginBottom: "16px",
+        marginBottom: isMobile ? "8px" : "16px",
         position: "relative",
-        zIndex: 1
+        zIndex: 1,
+        width: "100%"
       }}>
-        <Title level={3} style={{ 
-          margin: 0, 
+        <Title level={isMobile ? 4 : 3} style={{ 
+          margin: isMobile ? "0 0 8px 0" : 0, 
           color: themeColors.textPrimary,
           position: "relative",
           display: "flex",
@@ -210,12 +233,17 @@ function FileList({ onFileChange }) {
           </span>
         </Title>
         
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+        <div style={{ 
+          display: "flex", 
+          alignItems: "center", 
+          justifyContent: "flex-end",
+          width: isMobile ? "100%" : "auto"
+        }}>
           <Button
             type="default"
             icon={<RedoOutlined />}
             onClick={fetchFiles}
-            size="middle"
+            size={isMobile ? "small" : "middle"}
             style={{ 
               borderRadius: '8px',
               border: '1px solid rgba(67, 97, 238, 0.1)',
@@ -223,10 +251,15 @@ function FileList({ onFileChange }) {
               color: themeColors.textPrimary
             }}
           >
-            Refresh
+            {!isMobile && "Refresh"}
           </Button>
 
-          <Text type="secondary" style={{ marginLeft: "12px", display: "flex", alignItems: "center" }}>
+          <Text type="secondary" style={{ 
+            marginLeft: "12px", 
+            display: "flex", 
+            alignItems: "center",
+            fontSize: isMobile ? "12px" : "14px"
+          }}>
             <InfoCircleOutlined style={{ marginRight: "6px", color: themeColors.primary }} />
             <span style={{ 
               background: themeColors.accent,
@@ -242,7 +275,7 @@ function FileList({ onFileChange }) {
       </div>
       
       <Divider style={{ 
-        margin: "16px 0 24px", 
+        margin: isMobile ? "8px 0 12px" : "16px 0 24px", 
         borderColor: "rgba(67, 97, 238, 0.08)"
       }} />
 
@@ -255,6 +288,8 @@ function FileList({ onFileChange }) {
         viewMode={viewMode}
         setViewMode={setViewMode}
         themeColors={themeColors}
+        isMobile={isMobile}
+        isTablet={isTablet}
       />
 
       {loading ? (
@@ -263,34 +298,47 @@ function FileList({ onFileChange }) {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center", 
-          padding: "60px 0",
-          gap: "16px"
+          padding: isMobile ? "40px 0" : "60px 0",
+          gap: "16px",
+          minHeight: isMobile ? "calc(100vh - 200px)" : "300px",
         }}>
-          <Spin size="large" />
+          <Spin size={isMobile ? "default" : "large"} />
           <div style={{ 
             marginTop: "16px", 
             color: themeColors.primary, 
-            fontWeight: 500
+            fontWeight: 500,
+            fontSize: isMobile ? "14px" : "16px"
           }}>
             กำลังโหลดไฟล์...
           </div>
         </div>
       ) : filteredFiles.length === 0 ? (
         <div style={{
-          padding: "60px 0",
+          padding: isMobile ? "20px 0" : "60px 0",
           textAlign: "center",
-          background: "rgba(67, 97, 238, 0.02)",
-          borderRadius: "16px",
-          border: "1px dashed rgba(67, 97, 238, 0.1)"
+          background: isMobile ? "transparent" : "rgba(67, 97, 238, 0.02)",
+          borderRadius: isMobile ? 0 : "16px",
+          border: isMobile ? "none" : "1px dashed rgba(67, 97, 238, 0.1)",
+          height: isMobile ? "calc(100vh - 180px)" : undefined,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
         }}>
           <Empty 
             image={Empty.PRESENTED_IMAGE_SIMPLE} 
             description={
               <div>
-                <p style={{ color: themeColors.textPrimary, fontWeight: 500, marginBottom: "8px" }}>
+                <p style={{ 
+                  color: themeColors.textPrimary, 
+                  fontWeight: 500, 
+                  marginBottom: "8px",
+                  fontSize: isMobile ? "14px" : "16px"
+                }}>
                   ไม่พบไฟล์ที่ตรงตามเงื่อนไข
                 </p>
-                <Text type="secondary">ลองเปลี่ยนตัวกรองหรืออัปโหลดไฟล์ใหม่</Text>
+                <Text type="secondary" style={{ fontSize: isMobile ? "12px" : "14px" }}>
+                  ลองเปลี่ยนตัวกรองหรืออัปโหลดไฟล์ใหม่
+                </Text>
               </div>
             }
           />
@@ -301,6 +349,8 @@ function FileList({ onFileChange }) {
           onPreview={handlePreview}
           onDelete={handleDelete}
           themeColors={themeColors}
+          isMobile={isMobile}
+          isTablet={isTablet}
         />
       ) : (
         <FileTableView
@@ -308,6 +358,7 @@ function FileList({ onFileChange }) {
           onPreview={handlePreview}
           onDelete={handleDelete}
           themeColors={themeColors}
+          isMobile={isMobile}
         />
       )}
 
@@ -318,6 +369,7 @@ function FileList({ onFileChange }) {
         imageUrl={previewImage}
         onClose={() => setPreviewVisible(false)}
         themeColors={themeColors}
+        isMobile={isMobile}
       />
     </div>
   );
