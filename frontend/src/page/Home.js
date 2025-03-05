@@ -31,9 +31,9 @@ const Home = () => {
       {/* Hero Section */}
       <div className="hero-section">
         <div className="hero-content">
-          <Title style={{ fontSize: '48px', fontWeight: 'bold', color: '#fff' }}>Welcome to My Awesome Website</Title>
+          <Title style={{ fontSize: '48px', fontWeight: 'bold', color: '#fff' }}>Welcome to My Awesome Storage Website</Title>
           <Paragraph style={{ fontSize: '20px', color: '#fff' }}>
-            This is a place to show your awesome product or service.
+            This is a Website.
           </Paragraph>
           <Button 
             type="primary" 
@@ -50,18 +50,18 @@ const Home = () => {
       <div style={{ background: '#fff', padding: '50px 0' }}>
         <Row justify="center" gutter={[16, 16]}>
           <Col xs={24} sm={12} md={8}>
-            <Card title="Feature 1" bordered={false}>
-              <p>Details about Feature 1.</p>
+            <Card title="Load Balancer" bordered={false}>
+              <p>ใช้ Load Balancer บน Cloud เพื่อลดภาระของเซิร์ฟเวอร์และกระจายโหลด</p>
             </Card>
           </Col>
           <Col xs={24} sm={12} md={8}>
-            <Card title="Feature 2" bordered={false}>
-              <p>Details about Feature 2.</p>
+            <Card title="Scheduler Snapshot" bordered={false}>
+              <p>ตั้งค่าการสร้าง Snapshot อัตโนมัติตามช่วงเวลาที่กำหนด</p>
             </Card>
           </Col>
           <Col xs={24} sm={12} md={8}>
-            <Card title="Feature 3" bordered={false}>
-              <p>Details about Feature 3.</p>
+            <Card title="Backup" bordered={false}>
+              <p>มีระบบสำรองข้อมูลอัตโนมัติตาม Schedule เพื่อลดความเสี่ยงจากข้อมูลสูญหาย</p>
             </Card>
           </Col>
         </Row>

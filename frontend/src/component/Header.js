@@ -1,30 +1,26 @@
 import React from 'react';
-import { Layout, Row, Col, Menu, Button } from 'antd';
+import { Layout, Row, Col, Button } from 'antd';
 import { Link } from 'react-router-dom';
-import './home component/Header.css';  // ถ้าต้องการเพิ่ม CSS แบบแยกไฟล์
+import './home component/Header.css';
+import logo from './home component/favicon.ico'; // นำเข้ารูปจาก src/assets
 
 const { Header } = Layout;
 
 const CustomHeader = () => {
   return (
-    <Header style={{ background: '#fff', padding: '0 50px' }}>
+    <Header className="custom-header">
       <Row justify="space-between" align="middle" style={{ width: '100%' }}>
+        {/* Logo หรือชื่อเว็บไซต์ (ซ้าย) */}
         <Col>
-          <Menu theme="light" mode="horizontal">
-            <Menu.Item key="1">
-              <Link to="/">Home</Link>
-            </Menu.Item>
-            <Menu.Item key="2">
-              <Link to="/about">About</Link>
-            </Menu.Item>
-            <Menu.Item key="3">
-              <Link to="/contact">Contact</Link>
-            </Menu.Item>
-          </Menu>
+          <Link to="/" className="logo">
+            <img src={logo} alt="Website Logo" className="logo-image" />
+          </Link>
         </Col>
-        <Col style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+
+        {/* ปุ่ม Sign Up (ขวา) */}
+        <Col>
           <Link to="/login">
-            <Button type="primary" style={{ minWidth: '120px' }}>
+            <Button type="primary" className="signup-button">
               Sign Up
             </Button>
           </Link>

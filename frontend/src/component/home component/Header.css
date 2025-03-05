@@ -1,34 +1,50 @@
-/* src/components/Header.css */
+/* src/component/home component/Header.css */
 
-.ant-layout-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 50px;
-    background: #fff;
+.custom-header {
+  background: #fff;
+  padding: 0 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Logo สไตล์ */
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+  color: #000;
+  text-decoration: none;
+}
+
+/* src/component/home component/Header.css */
+
+.logo-image {
+  height: 50px; /* ปรับขนาดโลโก้ */
+  width: auto;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .logo-image {
+    height: 40px; /* ปรับขนาดโลโก้ในมือถือ */
   }
-  
-  .ant-row {
-    width: 100%;
+}
+
+
+/* ปุ่ม Sign Up */
+.signup-button {
+  min-width: 120px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .custom-header {
+    padding: 0 20px;
   }
-  
-  .ant-col {
-    min-width: 150px; /* กำหนดขั้นต่ำของคอลัมน์เพื่อป้องกันไม่ให้มันยุบ */
+
+  .signup-button {
+    min-width: 100px;
   }
-  
-  .ant-btn {
-    margin-left: 0px;
-    min-width: 120px; /* กำหนดขนาดขั้นต่ำของปุ่ม */
-  }
-  
-  @media (max-width: 768px) {
-    .ant-layout-header {
-      padding: 0 20px;
-    }
-  
-    .ant-menu-horizontal {
-      display: flex;
-      justify-content: space-around;
-    }
-  }
-  
+}
